@@ -7,6 +7,7 @@ key_pub_path="${HOME}/.ssh/${KEY_NAME}.pub"
 
 cp "${key_pub_path}" "${repo_local_path}"
 
-git add -a "${repo_local_path}" &&
+(cd "${repo_local_path}" &&
+    git add --all . &&
     git commit -m "${KEY_NAME}" &&
-    git push
+    git push)

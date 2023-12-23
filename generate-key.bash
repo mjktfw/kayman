@@ -17,16 +17,17 @@
 key_comment="mjktfw-pc"
 key_type="ed25519"
 gh_scopes="admin:public_key,admin:ssh_signing_key"
+gh_baseurl="https://raw.githubusercontent.com/mjktfw/.pubkeys/master"
 git_email="marcinjakubkaminski@gmail.com"
 git_username="mjktfw"
 
 key_priv_path="${HOME}/.ssh/${key_comment}"
 key_pub_path="${HOME}/.ssh/${key_comment}.pub"
 key_id_path="${HOME}/.ssh/id_${key_type}"
+gh_key_url="${gh_baseurl}/${key_comment}.pub"
 
 # automatically creates dir, if non-existing
 ssh-keygen -q -t "${key_type}" -C "${key_comment}" -f "${key_priv_path}"
-
 ln -sf "${key_priv_path}" "${key_id_path}"
 
 # github.com/login/device
@@ -42,9 +43,10 @@ gh config set --host github.com git_protocol ssh &&
 gh ssh-key add "${key_pub_path}" --type authentication
 
 # CONFIG GIT
-mkdir -p ~/pit
-git config --global user.email "${git_email}"
-git config --global user.name "${git_username}"
+mkdir -p ~/pit &&
+    git config --global user.email "${git_email}" &&
+    git config --global user.name "${git_username}"
 
 git clone ssh://git@github.com:mjktfw/.pubkeys.git ~/pit/.pubkeys
 
+curl "${gh_key_url}" >> .ssh/authorized_keys

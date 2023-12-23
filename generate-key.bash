@@ -49,4 +49,4 @@ mkdir -p ~/pit &&
 
 git clone ssh://git@github.com:mjktfw/.pubkeys.git ~/pit/.pubkeys
 
-curl "${gh_key_url}" >> .ssh/authorized_keys
+curl "${gh_key_url}" >> ~/.ssh/authorized_keys

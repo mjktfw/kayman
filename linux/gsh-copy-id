@@ -2,17 +2,17 @@
 
 source .env
 
-OPTSTRING=":u:r:k"
+OPTSTRING=":u:r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     u)
-      GH_USERNAME="${OPTARG}"
+      GSH_GH_USERNAME="${OPTARG}"
       ;;
     r)
-      GH_REPO_NAME="${OPTARG}"
+      GSH_GH_REPO_NAME="${OPTARG}"
       ;;
     k)
-      KEY_NAME="${OPTARG}"
+      GSH_KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -21,7 +21,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-gh_baseurl="https://raw.githubusercontent.com/${GH_USERNAME}/${GH_REPO_NAME}/master"
-gh_key_url="${gh_baseurl}/${KEY_NAME}.pub"
+gh_baseurl="https://raw.githubusercontent.com/${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}/master"
+gh_key_url="${gh_baseurl}/${GSH_KEY_NAME}.pub"
 
 curl "${gh_key_url}" >> ${HOME}/.ssh/authorized_keys

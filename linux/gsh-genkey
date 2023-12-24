@@ -1,0 +1,30 @@
+#! /bin/bash
+
+# sudo apt -y update &&
+#     sudo apt -y install ssh
+
+OPTSTRING=":t:k:"
+while getopts ${OPTSTRING} opt; do
+  case ${opt} in
+    t)
+      GSH_KEY_TYPE="${OPTARG}"
+      ;;
+    k)
+      GSH_KEY_NAME="${OPTARG}"
+      ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+      ;;
+  esac
+done
+
+key_priv_path="${HOME}/.ssh/${GSH_KEY_NAME}"
+key_pub_path="${key_priv_path}.pub"
+key_id_path="${HOME}/.ssh/id_${GSH_KEY_TYPE}"
+
+# automatically creates dir, if non-existing
+ssh-keygen -q -t "${GSH_KEY_TYPE}" -C "${GSH_KEY_NAME}" -f "${key_priv_path}"
+
+# TODO: add argument to make a key default
+# ln -sf "${key_priv_path}" "${key_id_path}"

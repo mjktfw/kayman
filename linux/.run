@@ -1,0 +1,21 @@
+#! /bin/bash
+
+# 0. create key
+# 1. push securely public key to remote host
+# - login to remote host
+# - 
+# 2. download key to the desired server
+
+source .env
+
+chmod +x *
+./config-git
+
+./generate-key
+
+./install-github-cli
+./authorize-github
+
+./key-add-repo
+
+./key-add-server

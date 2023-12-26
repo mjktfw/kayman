@@ -1,0 +1,5 @@
+#! ~/bin/bash
+
+key_pub_path="${HOME}/.ssh/${GSH_KEY_NAME}.pub"
+
+gh ssh-key add "${key_pub_path}" --type authentication

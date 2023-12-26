@@ -15,3 +15,4 @@ gh auth status ||
 
 gh config set --host github.com git_protocol ssh &&
     gh config set --host github.com prompt disabled
+    

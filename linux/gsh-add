@@ -1,5 +1,21 @@
 #! /bin/bash
 
+OPTSTRING=":r:k:"
+while getopts ${OPTSTRING} opt; do
+  case ${opt} in
+    r)
+      GSH_GH_REPO_NAME="${OPTARG}"
+      ;;
+    k)
+      GSH_KEY_NAME="${OPTARG}"
+      ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+      ;;
+  esac
+done
+
 repo_local_path="${HOME}/pit/${GSH_GH_REPO_NAME}"
 key_pub_path="${HOME}/.ssh/${GSH_KEY_NAME}.pub"
 

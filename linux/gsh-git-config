@@ -1,5 +1,21 @@
 #! /bin/bash
 
+OPTSTRING=":u:e:"
+while getopts ${OPTSTRING} opt; do
+  case ${opt} in
+    u)
+      GSH_GIT_USERNAME="${OPTARG}"
+      ;;
+    e)
+      GSH_GIT_EMAIL="${OPTARG}"
+      ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+      ;;
+  esac
+done
+
 # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
 # TODO: or better for windows: where.exe ssh.exe
 # TODO: must be quoted due to spaces!

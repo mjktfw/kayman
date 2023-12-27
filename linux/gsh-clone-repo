@@ -1,0 +1,22 @@
+#! /bin/bash
+
+OPTSTRING=":u:r:"
+while getopts ${OPTSTRING} opt; do
+  case ${opt} in
+    u)
+      GSH_GH_USERNAME="${OPTARG}"
+      ;;
+    r)
+      GSH_GH_REPO_NAME="${OPTARG}"
+      ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+      ;;
+  esac
+done
+
+repo_local_path="${HOME}/pit/${GSH_GH_REPO_NAME}"
+repo_remote_path="ssh://git@github.com:${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
+
+git clone "${repo_remote_path}" "${repo_local_path}"

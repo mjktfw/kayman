@@ -1,7 +1,5 @@
 #! /bin/bash
 
-source .env
-
 OPTSTRING=":u:r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in

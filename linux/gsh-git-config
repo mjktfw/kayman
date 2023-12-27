@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
+# TODO: or better for windows: where.exe ssh.exe
+# TODO: must be quoted due to spaces!
 mkdir -p ~/pit &&
     git config --global user.email "${GSH_GIT_EMAIL}" &&
     git config --global user.name "${GSH_GIT_USERNAME}"

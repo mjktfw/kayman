@@ -5,7 +5,7 @@
 # - login to remote host
 # - 
 # 2. download key to the desired server
-
+# test
 source .env
 
 chmod +x *

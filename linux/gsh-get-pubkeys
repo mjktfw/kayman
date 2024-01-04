@@ -20,4 +20,8 @@ repo_local_path="${GSH_PUBKEY_BASEDIR}/${GSH_GH_REPO_NAME}"
 # repo_remote_path="git@github.com:${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
 repo_remote_path="https://github.com/${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
 
-git clone "${repo_remote_path}" "${repo_local_path}"
+
+# TODO: check if proper git directory exists
+[ -d "${repo_local_path}" ] &&
+  $(cd "${repo_local_path} && git pull) ||
+  git clone "${repo_remote_path}" "${repo_local_path}"

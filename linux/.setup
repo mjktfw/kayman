@@ -1,4 +1,4 @@
 #! /bin/bash
 
-chmod +x ./gsh-
+chmod +x ./gsh-*
 source .env

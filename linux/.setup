@@ -6,16 +6,6 @@
 # - 
 # 2. download key to the desired server
 # test
+
 source .env
-
-chmod +x *
-./config-git
-
-./generate-key
-
-./install-github-cli
-./authorize-github
-
-./key-add-repo
-
-./key-add-server
+chmod +x ./gsh-

@@ -1,10 +1,16 @@
 - fill GSH_KEY_NAME and GSH_GIT_EMAIL in .env
-- ./.setup: assign +X and populate env variables 
+- . .env: populate env variables
+- ./.setup: assign +X  
 - ./gsh-git-config: configure git
 - ./gsh-github-install: install github cli
-- ./gsh-github-auth: authroize to github with a token
+- ./gsh-github-auth: authorize to github with a token
 - ./gsh-get-pubkeys: get repo with pubkeys
 
+# add key
 - ./gsh-keygen: generate a new key for the device
 - ./gsh-github-ssh: authorize to github with the key
 - ./gsh-add: add the key to the pubkey repo and push
+
+# authorize server
+- ./gsh-copy-id: copy id to authorized_keys
+- or simply curl >> to authorized_keys

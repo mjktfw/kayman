@@ -16,7 +16,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${HOME}/pit/${GSH_GH_REPO_NAME}"
+repo_local_path="${GSH_PUBKEY_BASEDIR}/${GSH_GH_REPO_NAME}"
 # repo_remote_path="git@github.com:${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
 repo_remote_path="https://github.com/${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
 

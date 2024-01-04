@@ -16,12 +16,14 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${HOME}/pit/${GSH_GH_REPO_NAME}"
+repo_local_path="${GSH_PUBKEY_BASEDIR}/${GSH_GH_REPO_NAME}"
+repo_remote_path="git@github.com:${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
 key_pub_path="${HOME}/.ssh/${GSH_KEY_NAME}.pub"
 
 cp "${key_pub_path}" "${repo_local_path}"
 
 (cd "${repo_local_path}" &&
+    git remote set-url origin ${repo_remote_path} &&
     git add --all . &&
     git commit -m "${GSH_KEY_NAME}" &&
     git push)

@@ -25,3 +25,4 @@ done
 mkdir -p ~/pit &&
     git config --global user.email "${GSH_GIT_EMAIL}" &&
     git config --global user.name "${GSH_GIT_USERNAME}"
+    

@@ -1,11 +1,4 @@
 #! /bin/bash
 
-# 0. create key
-# 1. push securely public key to remote host
-# - login to remote host
-# - 
-# 2. download key to the desired server
-# test
-
-source .env
 chmod +x ./gsh-
+source .env

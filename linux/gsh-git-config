@@ -19,6 +19,8 @@ done
 # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
 # TODO: or better for windows: where.exe ssh.exe
 # TODO: must be quoted due to spaces!
+# TODO: SSH_CMD=$(where.exe ssh.exe)
+# TODO: git config core.sshCommand "\"$CMD\""
 
 mkdir -p ~/pit &&
     git config --global user.email "${GSH_GIT_EMAIL}" &&

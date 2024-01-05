@@ -13,6 +13,4 @@ gh auth status ||
     --web \
     --scopes "${GSH_GH_SCOPES}"
 
-gh config set --host github.com git_protocol ssh &&
-    gh config set --host github.com prompt disabled
-    
+gh config set --host github.com prompt disabled

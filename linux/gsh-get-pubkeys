@@ -23,5 +23,5 @@ repo_remote_path="https://github.com/${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
 
 # TODO: check if proper git directory exists
 [ -d "${repo_local_path}" ] &&
-  $(cd "${repo_local_path} && git pull) ||
+  $(cd "${repo_local_path}" && git pull) ||
   git clone "${repo_remote_path}" "${repo_local_path}"

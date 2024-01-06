@@ -7,10 +7,10 @@ OPTSTRING=":t:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     t)
-      GSH_KEY_TYPE="${OPTARG}"
+      KMN_KEY_TYPE="${OPTARG}"
       ;;
     k)
-      GSH_KEY_NAME="${OPTARG}"
+      KMN_KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -19,12 +19,12 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-key_priv_path="${HOME}/.ssh/${GSH_KEY_NAME}"
-key_pub_path="${key_priv_path}.pub"
-key_id_path="${HOME}/.ssh/id_${GSH_KEY_TYPE}"
+key_priv_path="${HOME}/.ssh/${KMN_KEY_NAME}"
+key_id_path="${HOME}/.ssh/id_${KMN_KEY_TYPE}"
 
 # automatically creates dir, if non-existing
-ssh-keygen -q -t "${GSH_KEY_TYPE}" -C "${GSH_KEY_NAME}" -f "${key_priv_path}"
+ssh-keygen -q -t "${KMN_KEY_TYPE}" -C "${KMN_KEY_NAME}" -f "${key_priv_path}"
 
 # TODO: add argument to make a key default
-# ln -sf "${key_priv_path}" "${key_id_path}"
+ln -sf "${key_priv_path}" "${key_id_path}"
+ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"

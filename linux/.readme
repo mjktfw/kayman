@@ -1,16 +1,16 @@
-- fill GSH_KEY_NAME and GSH_GIT_EMAIL in .env
+- . ./.setup: assign +X, cp .env
+- fill KMN_KEY_NAME and KMN_GIT_EMAIL in .env
 - . .env: populate env variables
-- ./.setup: assign +X  
-- ./gsh-git-config: configure git
-- ./gsh-github-install: install github cli
-- ./gsh-github-auth: authorize to github with a token
-- ./gsh-get-pubkeys: get repo with pubkeys
+- ./kmn-git-config: configure git
+- ./kmn-github-install: install github cli
+- ./kmn-github-auth: authorize to github with a token
+- ./kmn-get-pubkeys: get repo with pubkeys
 
 # add key
-- ./gsh-keygen: generate a new key for the device
-- ./gsh-github-ssh: authorize to github with the key
-- ./gsh-add: add the key to the pubkey repo and push
+- ./kmn-keygen: generate a new key for the device
+- ./kmn-github-ssh: authorize to github with the key
+- ./kmn-add: add the key to the pubkey repo and push
 
 # authorize server
-- ./gsh-copy-id: copy id to authorized_keys
+- ./kmn-copy-id: copy id to authorized_keys
 - or simply curl >> to authorized_keys

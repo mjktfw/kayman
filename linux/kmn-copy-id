@@ -4,13 +4,13 @@ OPTSTRING=":u:r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     u)
-      GSH_GH_USERNAME="${OPTARG}"
+      KMN_GH_USERNAME="${OPTARG}"
       ;;
     r)
-      GSH_GH_REPO_NAME="${OPTARG}"
+      KMN_GH_REPO_NAME="${OPTARG}"
       ;;
     k)
-      GSH_KEY_NAME="${OPTARG}"
+      KMN_KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -19,7 +19,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-gh_baseurl="https://raw.githubusercontent.com/${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}/master"
-gh_key_url="${gh_baseurl}/${GSH_KEY_NAME}.pub"
+gh_baseurl="https://raw.githubusercontent.com/${KMN_GH_USERNAME}/${KMN_GH_REPO_NAME}/master"
+gh_key_url="${gh_baseurl}/${KMN_KEY_NAME}.pub"
 
 curl "${gh_key_url}" >> ${HOME}/.ssh/authorized_keys

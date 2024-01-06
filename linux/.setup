@@ -1,4 +1,4 @@
 #! /bin/bash
 
-chmod +x ./gsh-*
-source .env
+chmod +x ./kmn-*
+cp ./.env-default ./.env

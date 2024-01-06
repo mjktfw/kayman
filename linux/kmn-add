@@ -4,10 +4,10 @@ OPTSTRING=":r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     r)
-      GSH_GH_REPO_NAME="${OPTARG}"
+      KMN_GH_REPO_NAME="${OPTARG}"
       ;;
     k)
-      GSH_KEY_NAME="${OPTARG}"
+      KMN_KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -16,12 +16,12 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${GSH_PUBKEY_BASEDIR}/${GSH_GH_REPO_NAME}"
-key_pub_path="${HOME}/.ssh/${GSH_KEY_NAME}.pub"
+repo_local_path="${KMN_PUBKEY_BASEDIR}/${KMN_GH_REPO_NAME}"
+key_pub_path="${HOME}/.ssh/${KMN_KEY_NAME}.pub"
 
 cp "${key_pub_path}" "${repo_local_path}"
 
 (cd "${repo_local_path}" &&
     git add --all . &&
-    git commit -m "${GSH_KEY_NAME}";
+    git commit -m "${KMN_KEY_NAME}";
     git push)

@@ -4,10 +4,10 @@ OPTSTRING=":u:r:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     u)
-      GSH_GH_USERNAME="${OPTARG}"
+      KMN_GH_USERNAME="${OPTARG}"
       ;;
     r)
-      GSH_GH_REPO_NAME="${OPTARG}"
+      KMN_GH_REPO_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -16,10 +16,10 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${GSH_PUBKEY_BASEDIR}/${GSH_GH_REPO_NAME}"
-# repo_remote_path="git@github.com:${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
-repo_ssl_path="https://github.com/${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
-repo_ssh_path="git@github.com:${GSH_GH_USERNAME}/${GSH_GH_REPO_NAME}.git"
+repo_local_path="${KMN_PUBKEY_BASEDIR}/${KMN_GH_REPO_NAME}"
+# repo_remote_path="git@github.com:${KMN_GH_USERNAME}/${KMN_GH_REPO_NAME}.git"
+repo_ssl_path="https://github.com/${KMN_GH_USERNAME}/${KMN_GH_REPO_NAME}.git"
+repo_ssh_path="git@github.com:${KMN_GH_USERNAME}/${KMN_GH_REPO_NAME}.git"
 
 # TODO: check if proper git directory exists
 [ -d "${repo_local_path}" ] &&

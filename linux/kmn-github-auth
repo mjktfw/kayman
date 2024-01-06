@@ -11,6 +11,6 @@ gh auth status ||
     gh auth login --hostname github.com \
     --git-protocol https \
     --web \
-    --scopes "${GSH_GH_SCOPES}"
+    --scopes "${KMN_GH_SCOPES}"
 
 gh config set --host github.com prompt disabled

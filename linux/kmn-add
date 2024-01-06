@@ -4,7 +4,7 @@ OPTSTRING=":r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     r)
-      KMN_GH_REPO_NAME="${OPTARG}"
+      KMN_PUBKEY_REPO="${OPTARG}"
       ;;
     k)
       KMN_KEY_NAME="${OPTARG}"
@@ -16,7 +16,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${KMN_PUBKEY_BASEDIR}/${KMN_GH_REPO_NAME}"
+repo_local_path="${KMN_PUBKEY_BASEDIR}/${KMN_PUBKEY_REPO}"
 key_pub_path="${HOME}/.ssh/${KMN_KEY_NAME}.pub"
 
 cp "${key_pub_path}" "${repo_local_path}"

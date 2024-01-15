@@ -1,4 +1,4 @@
 #! /bin/bash
 
 chmod +x ./kmn-*
-cp ./.env-default ./.env
+cp ./.env.default ./.env

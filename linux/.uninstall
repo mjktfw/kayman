@@ -1,4 +1,4 @@
 #! /bin/bash
 
-rm "${HOME}/.local/bin/kmn-*"
+rm "${HOME}/.local/bin/kmn-"*
 rm "${HOME}/.profile.d/kayman.sh"

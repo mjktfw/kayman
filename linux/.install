@@ -3,7 +3,7 @@
 [ -d "${HOME}/.local/bin" ] ||
   mkdir -p "${HOME}/.local/bin"
 
-ln -sf "${KMN_DIR}/linux/kmn-"* "${HOME}/.local/bin/"
+ln -sf "${KMN_DIR}"/linux/kmn-* "${HOME}/.local/bin/"
 
 [ -d "${HOME}/.profile.d" ] ||
   mkdir -p "${HOME}/.profile.d"

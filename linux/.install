@@ -1,0 +1,13 @@
+#! /bin/bash
+
+[ -d "${HOME}/.local/bin" ] ||
+  mkdir -p "${HOME}/.local/bin"
+
+ln -sf "${KMN_BASEDIR}/linux/kmn-*" "${HOME}/.local/bin/"
+
+[ -d "${HOME}/.profile.d" ] ||
+  mkdir -p "${HOME}/.profile.d"
+
+# TODO: add .profile.d to .profile?
+
+ln -sf "${KMN_BASEDIR}/linux/.env" "${HOME}/.profile.d/kayman.sh"

@@ -1,5 +1,4 @@
 #! /bin/bash
 
-chmod +x ./.install ./.uninstall
 chmod +x ./kmn-*
 cp ./.env.default ./.env

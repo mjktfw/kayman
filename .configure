@@ -2,4 +2,4 @@
 
 . .env
 
-sudo cp -R ./src/. ./app
+cp -R ./src/. ./app

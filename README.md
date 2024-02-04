@@ -1,5 +1,10 @@
-- . ./.setup: assign +X, cp .env.default -> .env
+# Configure
+- . ./.configure: cp .env.default -> .env
+
+
 - fill KMN_KEY_NAME and KMN_GIT_EMAIL in .env
+
+# Install
 - . .env: populate env variables
 - ./kmn-git-config: configure git
 - ./kmn-github-install: install github cli

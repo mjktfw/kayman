@@ -1,4 +1,5 @@
-#! /bin/bash
+#!/bin/bash
 
-chmod +x ./src/kmn-*
-cp ./src/.env.default ./src/.env
+. .env
+
+sudo cp -R ./src/. ./app

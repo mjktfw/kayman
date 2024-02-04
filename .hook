@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ln -sf ../../.configure ./.git/hooks/post-merge

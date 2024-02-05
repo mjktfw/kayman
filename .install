@@ -1,22 +1,22 @@
 #! /bin/bash
 
-. ./app/.profile
-. ./app/.config
+. ./app/profile
+. ./app/config
+
+type -p ssh-keygen >/dev/null ||
+  ./.install-ssh
 
 type -p gh >/dev/null ||
   ./.install-gh
 
 [ -d "${HOME}/.local/bin" ] ||
   mkdir -p "${HOME}/.local/bin"
-
 ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${HOME}/.local/bin/"
 
 [ -d "${HOME}/.profile.d" ] ||
   mkdir -p "${HOME}/.profile.d"
-
-ln -sf "${APP_DIR}/.profile" "${HOME}/.profile.d/${APP_NAME}.sh"
+ln -sf "${APP_DIR}/profile" "${HOME}/.profile.d/${APP_NAME}.sh"
 
 [ -d "${HOME}/.config/${APP_NAME}" ] ||
   mkdir -p "${HOME}/.config/${APP_NAME}"
-
 ln -sf "${APP_DIR}/config" "${HOME}/.config/${APP_NAME}/config"

@@ -3,14 +3,14 @@
 - requires ~/.profile.d/*.sh to be sourced (add relevant lines inside ~/.profile)
 
 # Configure
-- . ./.configure:
-
-- fill KEY_NAME and GIT_EMAIL in .env
+- . ./.configure
+- fill variables in .app/config
 
 # Install
-- . .env: populate env variables
-- ./kmn-git-config: configure git
 - ./kmn-github-install: install github cli
+
+# First run and Setup
+- ./kmn-git-config: configure git
 - ./kmn-github-auth: authorize to github with a token
 - ./kmn-get-pubkeys: get repo with pubkeys
 

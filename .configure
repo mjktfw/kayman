@@ -3,3 +3,6 @@
 . .env
 
 cp -R ./src/. ./app
+
+[ ! -f "./app/config" ] &&
+    cp "./app/config.default" "./app/config"

@@ -1,13 +1,15 @@
 #! /bin/bash
 
+. "${KMN_DIR}/.env"
+
 OPTSTRING=":u:e:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     u)
-      KMN_GIT_USERNAME="${OPTARG}"
+      GIT_USERNAME="${OPTARG}"
       ;;
     e)
-      KMN_GIT_EMAIL="${OPTARG}"
+      GIT_EMAIL="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -23,6 +25,5 @@ done
 # TODO: git config core.sshCommand "\"$CMD\""
 
 mkdir -p ~/pit &&
-    git config --global user.email "${KMN_GIT_EMAIL}" &&
-    git config --global user.name "${KMN_GIT_USERNAME}"
-    
+    git config --global user.email "${GIT_EMAIL}" &&
+    git config --global user.name "${GIT_USERNAME}"

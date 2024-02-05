@@ -1,4 +1,4 @@
 #! /bin/bash
 
-rm "${HOME}/.local/bin/${APP_PREFIX}-"*
-rm "${HOME}/.profile.d/${APP_NAME}.sh"
+rm -rf "${HOME}/.local/bin/${APP_PREFIX}-"*
+rm -rf "${HOME}/.profile.d/${APP_NAME}.sh"

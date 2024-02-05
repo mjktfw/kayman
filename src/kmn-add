@@ -1,13 +1,15 @@
 #! /bin/bash
 
+. "${KMN_DIR}/.env"
+
 OPTSTRING=":r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     r)
-      KMN_PUBKEY_REPO="${OPTARG}"
+      PUBKEY_REPO="${OPTARG}"
       ;;
     k)
-      KMN_KEY_NAME="${OPTARG}"
+      KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -16,12 +18,12 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${KMN_PUBKEY_BASEDIR}/${KMN_PUBKEY_REPO}"
-key_pub_path="${HOME}/.ssh/${KMN_KEY_NAME}.pub"
+repo_local_path="${PUBKEY_BASEDIR}/${PUBKEY_REPO}"
+key_pub_path="${HOME}/.ssh/${KEY_NAME}.pub"
 
 cp "${key_pub_path}" "${repo_local_path}"
 
 (cd "${repo_local_path}" &&
     git add --all . &&
-    git commit -m "${KMN_KEY_NAME}";
+    git commit -m "${KEY_NAME}";
     git push)

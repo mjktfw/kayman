@@ -1,10 +1,12 @@
 #! /bin/bash
 
+. "${KMN_DIR}/.env"
+
 OPTSTRING=":k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     k)
-      KMN_KEY_NAME="${OPTARG}"
+      KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -13,8 +15,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-key_pub_path="${HOME}/.ssh/${KMN_KEY_NAME}.pub"
+key_pub_path="${HOME}/.ssh/${KEY_NAME}.pub"
 
 gh ssh-key add "${key_pub_path}" --type authentication
 gh config set --host github.com git_protocol ssh
-    

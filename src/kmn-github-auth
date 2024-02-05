@@ -1,5 +1,7 @@
 #! /bin/bash
 
+. "${KMN_DIR}/.env"
+
 # sudo apt -y update &&
 #     sudo apt -y install ssh gh git
 
@@ -11,6 +13,6 @@ gh auth status ||
     gh auth login --hostname github.com \
     --git-protocol https \
     --web \
-    --scopes "${KMN_GH_SCOPES}"
+    --scopes "${GH_SCOPES}"
 
 gh config set --host github.com prompt disabled

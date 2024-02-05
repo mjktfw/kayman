@@ -1,4 +1,4 @@
 #! /bin/bash
 
-export KMN_BASEDIR="${HOME}/lair"
-export KMN_DIR="${KMN_BASEDIR}/kayman"
+export MJK_BASEDIR="${HOME}/lair"
+export KMN_DIR="${MJK_BASEDIR}/kayman"

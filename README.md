@@ -1,8 +1,11 @@
+# Dependencies
+- ssh, gh, curl
+- requires ~/.profile.d/*.sh to be sourced (add relevant lines inside ~/.profile)
+
 # Configure
-- . ./.configure: cp .env.default -> .env
+- . ./.configure:
 
-
-- fill KMN_KEY_NAME and KMN_GIT_EMAIL in .env
+- fill KEY_NAME and GIT_EMAIL in .env
 
 # Install
 - . .env: populate env variables

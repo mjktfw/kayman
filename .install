@@ -3,14 +3,15 @@
 . ./app/.profile
 . ./app/.env
 
+type -p gh >/dev/null ||
+  ./.install-gh
+
 [ -d "${HOME}/.local/bin" ] ||
   mkdir -p "${HOME}/.local/bin"
 
-ln -sf "${APP_DIR}"/app/${APP_PREFIX}-* "${HOME}/.local/bin/"
+ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${HOME}/.local/bin/"
 
 [ -d "${HOME}/.profile.d" ] ||
   mkdir -p "${HOME}/.profile.d"
-
-# TODO: add .profile.d to .profile?
 
 ln -sf "${APP_DIR}/.profile" "${HOME}/.profile.d/${APP_NAME}.sh"

@@ -1,7 +1,6 @@
 #! /bin/bash
 
-# sudo apt -y update &&
-#     sudo apt -y install ssh
+. "${KMN_DIR}/.env"
 
 OPTSTRING=":t:k:"
 while getopts ${OPTSTRING} opt; do
@@ -10,7 +9,7 @@ while getopts ${OPTSTRING} opt; do
       KMN_KEY_TYPE="${OPTARG}"
       ;;
     k)
-      KMN_KEY_NAME="${OPTARG}"
+      KEY_NAME="${OPTARG}"
       ;;
     ?)
       echo "Invalid option: -${OPTARG}."
@@ -19,11 +18,11 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-key_priv_path="${HOME}/.ssh/${KMN_KEY_NAME}"
+key_priv_path="${HOME}/.ssh/${KEY_NAME}"
 key_id_path="${HOME}/.ssh/id_${KMN_KEY_TYPE}"
 
 # automatically creates dir, if non-existing
-ssh-keygen -q -t "${KMN_KEY_TYPE}" -C "${KMN_KEY_NAME}" -f "${key_priv_path}"
+ssh-keygen -q -t "${KMN_KEY_TYPE}" -C "${KEY_NAME}" -f "${key_priv_path}"
 
 # TODO: add argument to make a key default
 ln -sf "${key_priv_path}" "${key_id_path}"

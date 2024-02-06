@@ -24,8 +24,5 @@ done
 # TODO: SSH_CMD=$(where.exe ssh.exe)
 # TODO: git config core.sshCommand "\"$CMD\""
 
-echo $GIT_EMAIL
-echo $GIT_USERNAME
-
-# git config --global user.email "${GIT_EMAIL}" &&
-#   git config --global user.name "${GIT_USERNAME}"
+git config --global user.email "${GIT_EMAIL}" &&
+  git config --global user.name "${GIT_USERNAME}"

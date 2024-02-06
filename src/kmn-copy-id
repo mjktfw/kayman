@@ -24,5 +24,4 @@ done
 gh_baseurl="https://raw.githubusercontent.com/${PUBKEY_USERNAME}/${PUBKEY_REPO}/master"
 gh_key_url="${gh_baseurl}/${KEY_NAME}.pub"
 
-echo "${gh_key_url}"
 curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"

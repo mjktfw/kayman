@@ -1,6 +1,6 @@
 #! /bin/bash
 
-. "${KMN_DIR}/.env"
+. "${KMN_CONFIG}
 
 # sudo apt -y update &&
 #     sudo apt -y install ssh gh git

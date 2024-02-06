@@ -1,6 +1,6 @@
 #! /bin/bash
 
-. "${KMN_DIR}/.env"
+. "${KMN_CONFIG}
 
 OPTSTRING=":k:"
 while getopts ${OPTSTRING} opt; do

@@ -6,7 +6,5 @@ LINE='[ -f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
 LINECMBN="\n${LINE} # ${LINEHASH}"
 FILE="${HOME}/.profile"
 
-echo "2: $APP_DIR"
-
 grep -qF -- "${LINEHASH}" "${FILE}" || echo -e "${LINECMBN}" >> "${FILE}"
 cp -f "${APP_DIR}/app/profiledir" "${HOME}/.profiledir"

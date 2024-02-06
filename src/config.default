@@ -1,18 +1,24 @@
 #! /bin/bash
 
-KEY_NAME="${HOSTNAME}"
-GIT_EMAIL=""
-GIT_USERNAME="mjktfw"
-
+# APP
 APP_NAME="kayman"
 APP_PREFIX="kmn"
 
 APP_BASEDIR="${MJK_BASEDIR}"
 APP_DIR="${KMN_DIR}"
 
-KEY_TYPE="ed25519"
+# GIT
+GIT_EMAIL=""
+GIT_USERNAME="mjktfw"
 
+# GITHUB
+GH_SCOPES="admin:public_key,admin:ssh_signing_key"
+
+# KEY
+KEY_TYPE="ed25519"
+KEY_NAME="${HOSTNAME}"
+
+# PUBKEY
 PUBKEY_USERNAME="mjktfw"
 PUBKEY_REPO="mkays"
 PUBKEY_BASEDIR="${APP_BASEDIR}"
-GH_SCOPES="admin:public_key,admin:ssh_signing_key"

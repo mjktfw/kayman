@@ -1,7 +1,11 @@
 #! /bin/bash
 
+# set -o allexport
 . ./app/profile
 . ./app/config
+# set +o allexport
+
+echo "1: $APP_DIR"
 
 type -p ssh-keygen >/dev/null ||
   ./.install-ssh

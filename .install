@@ -11,9 +11,9 @@ type -p gh >/dev/null ||
 
 
 # TODO: move this section to another app
-LINE='\\n[ -f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
+LINE='\n[ -f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
 FILE="${HOME}/.profile"
-grep -qxF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+grep -qxF -- "$LINE" "$FILE" || echo -e "$LINE" >> "$FILE"
 cp "${APP_DIR}/app/profiledir" "${HOME}/.profiledir"
 
 [ -d "${HOME}/.local/bin" ] ||

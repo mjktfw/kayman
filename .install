@@ -9,6 +9,13 @@ type -p ssh-keygen >/dev/null ||
 type -p gh >/dev/null ||
   ./.install-gh
 
+
+# TODO: move this section to another app
+LINE='\n-f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
+FILE="${HOME}/.profile"
+grep -qxF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
+cp "${APP_DIR}/app/profiledir" . "${HOME}/.profiledir"
+
 [ -d "${HOME}/.local/bin" ] ||
   mkdir -p "${HOME}/.local/bin"
 ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${HOME}/.local/bin/"

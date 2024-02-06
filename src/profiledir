@@ -1,0 +1,12 @@
+#! /bin/bash
+
+PROFILE_DIR="${HOME}/.profile.d"
+
+if [ -d "${PROFILE_DIR}" ]; then
+  for i in "${PROFILE_DIR}"/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi

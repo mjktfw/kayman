@@ -18,8 +18,14 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
+# TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
+# TODO: or better for windows: where.exe ssh.exe
+# TODO: must be quoted due to spaces!
+# TODO: SSH_CMD=$(where.exe ssh.exe)
+# TODO: git config core.sshCommand "\"$CMD\""
+
 echo $GIT_EMAIL
 echo $GIT_USERNAME
 
-git config --global user.email "${GIT_EMAIL}" &&
-  git config --global user.name "${GIT_USERNAME}"
+# git config --global user.email "${GIT_EMAIL}" &&
+#   git config --global user.name "${GIT_USERNAME}"

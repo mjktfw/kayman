@@ -3,11 +3,13 @@
 - requires ~/.profile.d/*.sh to be sourced (add relevant lines inside ~/.profile)
 
 # Configure
+Runs on pull. Prepares app directory: file structure, permissions, ownership.
 - . ./.configure
-- fill variables in ./app/config
+- manually fill variables in ./app/config
 
 # Install
-- ./.install: install app and dependencies
+Links files from app directory to OS. Installs dependencies.
+- ./.install:
 
 # First run and Setup
 - ./kmn-git-config: configure git

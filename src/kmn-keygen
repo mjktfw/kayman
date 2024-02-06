@@ -6,7 +6,7 @@ OPTSTRING=":t:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     t)
-      KMN_KEY_TYPE="${OPTARG}"
+      KEY_TYPE="${OPTARG}"
       ;;
     k)
       KEY_NAME="${OPTARG}"
@@ -19,10 +19,10 @@ while getopts ${OPTSTRING} opt; do
 done
 
 key_priv_path="${HOME}/.ssh/${KEY_NAME}"
-key_id_path="${HOME}/.ssh/id_${KMN_KEY_TYPE}"
+key_id_path="${HOME}/.ssh/id_${KEY_TYPE}"
 
 # automatically creates dir, if non-existing
-ssh-keygen -q -t "${KMN_KEY_TYPE}" -C "${KEY_NAME}" -f "${key_priv_path}"
+ssh-keygen -q -t "${KEY_TYPE}" -C "${KEY_NAME}" -f "${key_priv_path}"
 
 # TODO: add argument to make a key default
 ln -sf "${key_priv_path}" "${key_id_path}"

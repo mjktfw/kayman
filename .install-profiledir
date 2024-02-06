@@ -1,0 +1,7 @@
+#! /bin/bash
+
+# TODO: make this separate app?
+LINE='[ -f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
+FILE="${HOME}/.profile"
+grep -qxF -- "${LINE}" "${FILE}" || echo -e "\n${LINE}" >> "${FILE}"
+cp "${APP_DIR}/app/profiledir" "${HOME}/.profiledir"

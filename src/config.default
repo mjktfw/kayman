@@ -1,6 +1,6 @@
 #! /bin/bash
 
-KEY_NAME=""
+KEY_NAME="${HOSTNAME}"
 GIT_EMAIL=""
 GIT_USERNAME="mjktfw"
 

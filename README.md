@@ -4,10 +4,10 @@
 
 # Configure
 - . ./.configure
-- fill variables in .app/config
+- fill variables in ./app/config
 
 # Install
-- ./kmn-github-install: install github cli
+- ./.install: install app and dependencies
 
 # First run and Setup
 - ./kmn-git-config: configure git

@@ -1,9 +1,9 @@
 #! /bin/bash
 
-# set -o allexport
+set -o allexport
 . ./app/profile
 . ./app/config
-# set +o allexport
+set +o allexport
 
 echo "1: $APP_DIR"
 

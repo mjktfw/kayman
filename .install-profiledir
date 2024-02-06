@@ -7,4 +7,4 @@ LINECMBN="\n${LINE} # ${LINEHASH}"
 FILE="${HOME}/.profile"
 
 grep -qF -- "${LINEHASH}" "${FILE}" || echo -e "${LINECMBN}" >> "${FILE}"
-cp "${APP_DIR}/app/profiledir" "${HOME}/.profiledir"
+cp -f "${APP_DIR}/app/profiledir" "${HOME}/.profiledir"

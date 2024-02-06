@@ -1,6 +1,6 @@
 #! /bin/bash
 
-. "${KMN_CONFIG}
+. "${KMN_CONFIG}"
 
 OPTSTRING=":t:k:"
 while getopts ${OPTSTRING} opt; do

@@ -1,7 +1,10 @@
 #! /bin/bash
 
 # TODO: make this separate app?
+LINEHASH="a7e9f1d3b4c8f2e0"
 LINE='[ -f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
+LINECMBN="\n${LINE} # ${LINEHASH}"
 FILE="${HOME}/.profile"
-grep -qxF -- "${LINE}" "${FILE}" || echo -e "\n${LINE}" >> "${FILE}"
+
+grep -qF -- "${LINEHASH}" "${FILE}" || echo -e "${LINECMBN}" >> "${FILE}"
 cp "${APP_DIR}/app/profiledir" "${HOME}/.profiledir"

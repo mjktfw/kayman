@@ -1,33 +1,31 @@
 #! /bin/bash
 
-echo "${KMN_CONFIG}"
+. "${KMN_CONFIG}"
 
-# . "${KMN_CONFIG}"
+OPTSTRING=":u:e:"
+while getopts ${OPTSTRING} opt; do
+  case ${opt} in
+    u)
+      GIT_USERNAME="${OPTARG}"
+      ;;
+    e)
+      GIT_EMAIL="${OPTARG}"
+      ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 1
+      ;;
+  esac
+done
 
-# OPTSTRING=":u:e:"
-# while getopts ${OPTSTRING} opt; do
-#   case ${opt} in
-#     u)
-#       GIT_USERNAME="${OPTARG}"
-#       ;;
-#     e)
-#       GIT_EMAIL="${OPTARG}"
-#       ;;
-#     ?)
-#       echo "Invalid option: -${OPTARG}."
-#       exit 1
-#       ;;
-#   esac
-# done
+# TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
+# TODO: or better for windows: where.exe ssh.exe
+# TODO: must be quoted due to spaces!
+# TODO: SSH_CMD=$(where.exe ssh.exe)
+# TODO: git config core.sshCommand "\"$CMD\""
 
-# # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
-# # TODO: or better for windows: where.exe ssh.exe
-# # TODO: must be quoted due to spaces!
-# # TODO: SSH_CMD=$(where.exe ssh.exe)
-# # TODO: git config core.sshCommand "\"$CMD\""
+echo $GIT_EMAIL
+echo $GIT_USERNAME
 
-# echo $GIT_EMAIL
-# echo $GIT_USERNAME
-
-# # git config --global user.email "${GIT_EMAIL}" &&
-# #   git config --global user.name "${GIT_USERNAME}"
+# git config --global user.email "${GIT_EMAIL}" &&
+#   git config --global user.name "${GIT_USERNAME}"

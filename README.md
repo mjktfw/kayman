@@ -9,7 +9,7 @@ Runs on pull. Prepares app directory: file structure, permissions, ownership.
 
 # Install
 Links files from app directory to OS. Installs dependencies.
-- ./.install:
+- ./.install
 
 # First run and Setup
 - ./kmn-git-config: configure git

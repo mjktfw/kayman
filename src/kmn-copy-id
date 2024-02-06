@@ -6,7 +6,7 @@ OPTSTRING=":u:r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     u)
-      PUBKEY_USER="${OPTARG}"
+      PUBKEY_USERNAME="${OPTARG}"
       ;;
     r)
       PUBKEY_REPO="${OPTARG}"
@@ -21,7 +21,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-gh_baseurl="https://raw.githubusercontent.com/${PUBKEY_USER}/${PUBKEY_REPO}/master"
+gh_baseurl="https://raw.githubusercontent.com/${PUBKEY_USERNAME}/${PUBKEY_REPO}/master"
 gh_key_url="${gh_baseurl}/${KEY_NAME}.pub"
 
 curl "${gh_key_url}" >> ${HOME}/.ssh/authorized_keys

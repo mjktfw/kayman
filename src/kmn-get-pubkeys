@@ -6,7 +6,7 @@ OPTSTRING=":u:r:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     u)
-      PUBKEY_USER="${OPTARG}"
+      PUBKEY_USERNAME="${OPTARG}"
       ;;
     r)
       PUBKEY_REPO="${OPTARG}"
@@ -19,9 +19,9 @@ while getopts ${OPTSTRING} opt; do
 done
 
 repo_local_path="${PUBKEY_BASEDIR}/${PUBKEY_REPO}"
-# repo_remote_path="git@github.com:${PUBKEY_USER}/${PUBKEY_REPO}.git"
-repo_ssl_path="https://github.com/${PUBKEY_USER}/${PUBKEY_REPO}.git"
-repo_ssh_path="git@github.com:${PUBKEY_USER}/${PUBKEY_REPO}.git"
+# repo_remote_path="git@github.com:${PUBKEY_USERNAME}/${PUBKEY_REPO}.git"
+repo_ssl_path="https://github.com/${PUBKEY_USERNAME}/${PUBKEY_REPO}.git"
+repo_ssh_path="git@github.com:${PUBKEY_USERNAME}/${PUBKEY_REPO}.git"
 
 # TODO: check if proper git directory exists
 [ -d "${repo_local_path}" ] &&

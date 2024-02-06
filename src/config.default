@@ -1,6 +1,7 @@
 #! /bin/bash
 
 # TODO: rename steps
+# TODO: divide variables into files relevant to steps (config, install, use, etc.)
 
 # INSTALL
 ## APP

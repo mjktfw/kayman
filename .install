@@ -14,7 +14,7 @@ type -p gh >/dev/null ||
 LINE='\n-f "${HOME}/.profiledir" ] && . "${HOME}/.profiledir"'
 FILE="${HOME}/.profile"
 grep -qxF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
-cp "${APP_DIR}/app/profiledir" . "${HOME}/.profiledir"
+cp "${APP_DIR}/app/.profiledir" . "${HOME}/"
 
 [ -d "${HOME}/.local/bin" ] ||
   mkdir -p "${HOME}/.local/bin"

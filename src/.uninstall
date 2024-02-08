@@ -1,5 +1,7 @@
 #! /bin/bash
 
+. ./app/app.conf
+
 rm -rf "${HOME}/.local/bin/${APP_PREFIX}-"*
 rm -rf "${HOME}/.profile.d/${APP_NAME}.sh"
 rm -rf "${HOME}/.config/${APP_NAME}/config"

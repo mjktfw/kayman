@@ -1,6 +1,7 @@
 #!/bin/bash
 
-./app/.uninstall
+[ -f ./app/.uninstall ] &&
+    ./app/.uninstall
 
 ./.ungit
 ./.prep-files

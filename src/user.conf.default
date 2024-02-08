@@ -17,7 +17,7 @@ KEY_TYPE="ed25519"
 KEY_NAME="${HOSTNAME}"
 
 ## PUBKEY
-# TODO: probably should be moved to another app
+# TODO: probably should be moved to another app, together with kmn-install-mkays and kmn-add
 PUBKEY_USERNAME="mjktfw"
 PUBKEY_REPO="mkays"
-PUBKEY_BASEDIR="${APP_BASEDIR}"
+PUBKEY_BASEDIR="$(dirname $APP_DIR)"

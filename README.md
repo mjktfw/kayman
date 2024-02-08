@@ -1,8 +1,14 @@
-# Dependencies
-- ssh, gh, curl
-- requires ~/.profile.d/*.sh to be sourced (add relevant lines inside ~/.profile)
+# Install and config
+## Assumptions:
+- do not require any initial configuration
+- dependencies will be installed during installation process
 
-# Configure
+## Dependencies
+- libraries: ssh, gh, curl
+- os: ~/.profile.d/*.sh sourced and env vars set on shell launch
+
+## Process
+- ./.hook - enable `post-merge hook`
 Runs on pull. Prepares app directory: file structure, permissions, ownership.
 - . ./.configure
 - manually fill variables in ./app/config

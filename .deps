@@ -1,0 +1,10 @@
+#! /bin/bash
+
+type -p ssh-keygen >/dev/null ||
+  ./.deps.d/install-ssh
+
+type -p gh >/dev/null ||
+  ./.deps.d/install-gh
+
+[ -f "${HOME}/.profiledir" ] ||
+  ./.deps.d/install-profiledir

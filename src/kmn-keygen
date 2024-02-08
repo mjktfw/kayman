@@ -27,3 +27,5 @@ ssh-keygen -q -t "${KEY_TYPE}" -C "${KEY_NAME}" -f "${key_priv_path}"
 # TODO: add argument to make a key default
 ln -sf "${key_priv_path}" "${key_id_path}"
 ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
+
+# TODO: better create key in the working directory and add another command to make it default

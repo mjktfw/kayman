@@ -5,15 +5,6 @@ set -o allexport
 . ./app/config
 set +o allexport
 
-type -p ssh-keygen >/dev/null ||
-  ./.install-ssh
-
-type -p gh >/dev/null ||
-  ./.install-gh
-
-[ -f "${HOME}/.profiledir" ] ||
-  ./.install-profiledir
-
 [ -d "${HOME}/.local/bin" ] ||
   mkdir -p "${HOME}/.local/bin"
 ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${HOME}/.local/bin/"

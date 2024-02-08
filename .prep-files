@@ -1,8 +1,4 @@
-#!/bin/bash
-
-. .env
-
-cp -R ./src/. ./app
+#! /bin/bash
 
 [ ! -f "./app/config" ] &&
     cp "./app/config.default" "./app/config"

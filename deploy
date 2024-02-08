@@ -16,4 +16,4 @@ echo Deps
 echo Link
 ./.link
 
-echo ok ok
+echo ok

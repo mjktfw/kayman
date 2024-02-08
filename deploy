@@ -4,7 +4,16 @@ set -e
 [ -f ./app/.uninstall ] &&
     ./app/.uninstall
 
+echo Ungit
 ./.ungit
+
+echo Prep
 ./.prep
+
+echo Deps
 ./.deps
+
+echo Link
 ./.link
+
+echo ok

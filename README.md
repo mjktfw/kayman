@@ -1,17 +1,20 @@
 # Install and config
 ## Assumptions:
 - do not require any initial configuration
-- dependencies will be installed during installation process
+- dependencies will be installed during the installation process
 
 ## Dependencies
 - libraries: ssh, gh, curl
 - os: ~/.profile.d/*.sh sourced and env vars set on shell launch
 
 ## Process
-- ./.hook - enable `post-merge hook`
-Runs on pull. Prepares app directory: file structure, permissions, ownership.
-- . ./.configure
-- manually fill variables in ./app/config
+- `./.hook` - enable `post-merge` hook
+- `./deploy` :
+    - `./app/.unlink` - unlink previous version, if exists
+    - `./.ungit` - copy to gitignored directory
+    - `./.prep` - move, rename, chmod, etc, chown files if necessary
+    - `./.deps` - install dependencies
+    - `./.link` - symlink files to system file structure
 
 # Install
 Links files from app directory to OS. Installs dependencies.

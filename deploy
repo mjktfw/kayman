@@ -4,6 +4,6 @@
     ./app/.uninstall
 
 ./.ungit
-./.prep-files
+./.prep
 ./.deps
-./.install
+./.link

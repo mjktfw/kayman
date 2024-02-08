@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 
 [ ! -f "./app/config" ] &&
     cp "./app/user.conf.default" "./app/user.conf"

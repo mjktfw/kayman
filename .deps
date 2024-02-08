@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 
 type -p ssh-keygen >/dev/null ||
   ./.deps.d/install-ssh

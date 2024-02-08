@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 [ -f ./app/.uninstall ] &&
     ./app/.uninstall

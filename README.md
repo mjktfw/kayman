@@ -3,10 +3,6 @@
 - do not require any initial configuration
 - dependencies will be installed during the installation process
 
-## Dependencies
-- libraries: `ssh`, `gh`, `curl`
-- os: `~/.profile.d/*.sh` sourced to set env vars on shell launch
-
 ## Process
 - `./.hook` - enable `post-merge` hook
 - `./deploy` :
@@ -16,7 +12,13 @@
     - `./.deps` - install dependencies
     - `./.link` - symlink files to system file structure
 
-# Usage: local
+## Dependencies
+- libraries: `ssh`, `gh`, `curl`
+- os:
+        - `~/.profile.d/*.sh` sourced to set env vars on shell launch
+        - follows 'XDG Base Directory Specification'
+
+# Use: local
 
 ## First run and Setup
 - `./kmn-git-config`: configure git
@@ -30,7 +32,7 @@
 ## Register key
 - `./kmn-add`: add the key to the pubkey repo and push
 
-# Usage: remote
+# Use: remote
 
 ## Authorize server
 - `./kmn-copy-id`: copy id to authorized_keys

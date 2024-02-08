@@ -4,8 +4,8 @@
 - dependencies will be installed during the installation process
 
 ## Dependencies
-- libraries: ssh, gh, curl
-- os: ~/.profile.d/*.sh sourced and env vars set on shell launch
+- libraries: `ssh`, `gh`, `curl`
+- os: `~/.profile.d/*.sh` sourced and env vars set on shell launch
 
 ## Process
 - `./.hook` - enable `post-merge` hook

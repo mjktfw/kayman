@@ -1,4 +1,4 @@
 #! /bin/bash
 
 [ ! -f "./app/config" ] &&
-    cp "./app/config.default" "./app/config"
+    cp "./app/user.conf.default" "./app/user.conf"

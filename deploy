@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. .env
+./app/.uninstall
 
 ./.ungit
 ./.prep-files

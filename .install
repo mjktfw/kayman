@@ -1,8 +1,8 @@
 #! /bin/bash
 
 set -o allexport
-. ./app/profile
-. ./app/config
+. ./app/profile.conf
+. ./app/app.conf
 set +o allexport
 
 [ -d "${HOME}/.local/bin" ] ||
@@ -15,4 +15,5 @@ ln -sf "${APP_DIR}/app/profile" "${HOME}/.profile.d/${APP_NAME}.sh"
 
 [ -d "${HOME}/.config/${APP_NAME}" ] ||
   mkdir -p "${HOME}/.config/${APP_NAME}"
-ln -sf "${APP_DIR}/app/config" "${HOME}/.config/${APP_NAME}/config"
+ln -sf "${APP_DIR}/app/app.conf" "${HOME}/.config/${APP_NAME}/"
+ln -sf "${APP_DIR}/app/user.conf" "${HOME}/.config/${APP_NAME}/"

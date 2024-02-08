@@ -1,5 +1,4 @@
 # Install and config
-
 ## Assumptions:
 - do not require any initial configuration
 - dependencies will be installed during the installation process

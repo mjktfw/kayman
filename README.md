@@ -1,4 +1,5 @@
 # Install and config
+
 ## Assumptions:
 - do not require any initial configuration
 - dependencies will be installed during the installation process
@@ -16,7 +17,7 @@
     - `./.deps` - install dependencies
     - `./.link` - symlink files to system file structure
 
-# Usage
+# Usage: local
 
 ## First run and Setup
 - `./kmn-git-config`: configure git
@@ -29,6 +30,8 @@
 
 ## Register key
 - `./kmn-add`: add the key to the pubkey repo and push
+
+# Usage: remote
 
 ## Authorize server
 - `./kmn-copy-id`: copy id to authorized_keys

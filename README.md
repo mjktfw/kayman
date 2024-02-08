@@ -15,8 +15,8 @@
 ## Dependencies
 - libraries: `ssh`, `gh`, `curl`
 - os:
-        - `~/.profile.d/*.sh` sourced to set env vars on shell launch
-        - follows 'XDG Base Directory Specification'
+    - `~/.profile.d/*.sh` sourced to set env vars on shell launch
+    - follows 'XDG Base Directory Specification'
 
 # Use: local
 

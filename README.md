@@ -18,6 +18,11 @@
     - `~/.profile.d/*.sh` sourced to set env vars on shell launch
     - follows 'XDG Base Directory Specification'
 
+## Config
+- `profile`
+- `app.conf`
+- `user.conf`
+
 # Use: local
 
 ## First run and Setup

@@ -12,7 +12,7 @@ ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${BIN_DIR}/"
 
 [ -d "${PROFILE_DIR}" ] ||
   mkdir -p "${PROFILE_DIR}"
-ln -sf "${APP_DIR}/app/profile" "${PROFILE_DIR}/${APP_NAME}.sh"
+ln -sf "${APP_DIR}/app/profile.conf" "${PROFILE_DIR}/${APP_NAME}.sh"
 
 [ -d "${CONF_DIR}/${APP_NAME}" ] ||
   mkdir -p "${CONF_DIR}/${APP_NAME}"

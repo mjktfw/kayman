@@ -21,17 +21,13 @@
     - follows 'XDG Base Directory Specification'
 
 ## Config
-- `profile` : required by poth install and use
-    - install:
-    - use:
+- `profile` : required by both install and use
 - `app.conf` install only
-    - install:
-    - use:
 - `user.conf` use only
-    - install:
-    - use:
 
 # Use: local
+## Configure:
+- `app.conf`: setup git email
 
 ## First run and Setup
 - `./kmn-git-config`: configure git

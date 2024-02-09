@@ -20,4 +20,4 @@ KEY_NAME="${HOSTNAME}"
 # TODO: probably should be moved to another app, together with kmn-install-mkays and kmn-add
 PUBKEY_USERNAME="mjktfw"
 PUBKEY_REPO="mkays"
-PUBKEY_BASEDIR="$(dirname $APP_DIR)"
+PUBKEY_BASEDIR="${MJK_BASEDIR}"

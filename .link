@@ -6,15 +6,15 @@ set -o allexport
 . ./app/app.conf
 set +o allexport
 
-[ -d "${HOME}/.local/bin" ] ||
-  mkdir -p "${HOME}/.local/bin"
-ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${HOME}/.local/bin/"
+[ -d "${BIN_DIR}" ] ||
+  mkdir -p "${BIN_DIR}"
+ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${BIN_DIR}/"
 
-[ -d "${HOME}/.profile.d" ] ||
-  mkdir -p "${HOME}/.profile.d"
-ln -sf "${APP_DIR}/app/profile" "${HOME}/.profile.d/${APP_NAME}.sh"
+[ -d "${PROFILE_DIR}" ] ||
+  mkdir -p "${PROFILE_DIR}"
+ln -sf "${APP_DIR}/app/profile" "${PROFILE_DIR}/${APP_NAME}.sh"
 
-[ -d "${HOME}/.config/${APP_NAME}" ] ||
-  mkdir -p "${HOME}/.config/${APP_NAME}"
-ln -sf "${APP_DIR}/app/app.conf" "${HOME}/.config/${APP_NAME}/"
-ln -sf "${APP_DIR}/app/user.conf" "${HOME}/.config/${APP_NAME}/"
+[ -d "${CONF_DIR}/${APP_NAME}" ] ||
+  mkdir -p "${CONF_DIR}/${APP_NAME}"
+ln -sf "${APP_DIR}/app/app.conf" "${CONF_DIR}/${APP_NAME}/"
+ln -sf "${APP_DIR}/app/user.conf" "${CONF_DIR}/${APP_NAME}/"

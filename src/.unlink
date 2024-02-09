@@ -2,6 +2,7 @@
 
 . ./app/app.conf
 
-rm -rf "${HOME}/.local/bin/${APP_PREFIX}-"*
-rm -rf "${HOME}/.profile.d/${APP_NAME}.sh"
-rm -rf "${HOME}/.config/${APP_NAME}"
+rm -rf "${PROFILE_DIR}/${APP_NAME}.sh"
+
+rm -rf "${BIN_DIR}/${APP_PREFIX}-"*
+rm -rf "${CONF_DIR}/${APP_NAME}"

@@ -1,14 +1,16 @@
 # Install and config
 ## Assumptions:
-- do not require any initial configuration
+- automatic installation without manual editing, unless non-standard location
+- usage might require some manual editing of `*.conf` files
 - dependencies will be installed during the installation process
+- script names follow `${PREFIX}-*` pattern
 
-## Process
+## Steps
 - `./.hook` - enable `post-merge` hook
 - `./deploy` :
     - `./app/.unlink` - unlink previous version, if exists
     - `./.ungit` - copy to gitignored directory
-    - `./.prep` - move, rename, chmod, etc, chown files if necessary
+    - `./.prep` - move files, rename, chmod, chown, etc. if necessary
     - `./.deps` - install dependencies
     - `./.link` - symlink files to system file structure
 
@@ -19,9 +21,15 @@
     - follows 'XDG Base Directory Specification'
 
 ## Config
-- `profile`
-- `app.conf`
-- `user.conf`
+- `profile` : required by poth install and use
+    - install:
+    - use:
+- `app.conf` install only
+    - install:
+    - use:
+- `user.conf` use only
+    - install:
+    - use:
 
 # Use: local
 

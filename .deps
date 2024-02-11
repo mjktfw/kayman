@@ -1,6 +1,11 @@
 #! /bin/bash
 set -e
 
+set -o allexport
+. ./app/profile.conf
+. ./app/app.conf
+set +o allexport
+
 type -p ssh-keygen >/dev/null ||
   ./.deps.d/install-ssh
 
@@ -9,3 +14,5 @@ type -p gh >/dev/null ||
 
 [ -f "${HOME}/.profiledir" ] ||
   ./.deps.d/install-profiledir
+
+./.deps.d/install-mkays

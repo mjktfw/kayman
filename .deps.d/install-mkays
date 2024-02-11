@@ -1,0 +1,23 @@
+#! /bin/bash
+
+set -e
+
+BASEDIR="${MJK_BASEDIR}"
+REPO_NAME="mkays"
+REPO_USER="mjktfw"
+
+repo_local_path="${BASEDIR}/${REPO_NAME}"
+
+repo_ssl="https://github.com/${REPO_USER}/${REPO_NAME}.git"
+repo_ssh="git@github.com:${REPO_USER}/${REPO_NAME}.git"
+
+[ ! -d "${repo_local_path}/.git" ] &&
+  git clone "${repo_ssl}" "${repo_local_path}"
+
+(cd "${repo_local_path}" &&
+  git pull &&
+  ./.hook &&
+  ./deploy)
+
+(cd "${repo_local_path}" &&
+  git remote set-url --push origin "${repo_ssh}")

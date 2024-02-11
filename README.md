@@ -2,6 +2,7 @@
 ## Assumptions:
 - automatic installation without manual editing, unless non-standard location
 - usage might require some manual editing of `*.conf` files
+- usage only requires location of `user.conf` config file
 - dependencies will be installed during the installation process
 - script names follow `${PREFIX}-*` pattern
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-[ -f ./app/.uninstall ] &&
-    ./app/.uninstall
+[ -f ./app/.unlink ] &&
+    ./app/.unlink
 
 ./.ungit
 ./.prep

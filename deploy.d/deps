@@ -2,7 +2,7 @@
 set -e
 
 set -o allexport
-. ./app/profile.conf
+. ./app/profile
 . ./app/app.conf
 set +o allexport
 

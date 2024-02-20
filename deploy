@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-[ -f ./app/.unlink ] &&
-    ./app/.unlink
+[ -f ./app/unlink ] &&
+    ./app/unlink
 
-./.ungit
-./.prep
-./.deps
-./.link
+./deploy.d/ungit
+./deploy.d/prep
+./deploy.d/deps
+./deploy.d/link

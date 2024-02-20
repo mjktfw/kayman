@@ -1,3 +1,1 @@
 #! /bin/bash
-
-rm -rf ./.git/hooks/post-merge

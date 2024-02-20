@@ -10,7 +10,6 @@ case "$1" in
   "down")
     rm -rf "${hook_path}"
     ;;
-    ;;
   *)
     echo "Valid arguments are: up, down."
     exit 1

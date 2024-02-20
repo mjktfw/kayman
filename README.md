@@ -9,11 +9,11 @@
 ## Steps
 - `./.hook` - enable `post-merge` hook
 - `./deploy` :
-    - `./app/.unlink` - unlink previous version, if exists
-    - `./.ungit` - copy to gitignored directory
-    - `./.prep` - move files, rename, chmod, chown, etc. if necessary
-    - `./.deps` - install dependencies
-    - `./.link` - symlink files to system file structure
+    - `./app/unlink` - unlink previous version, if exists
+    - `./deploy.d/ungit` - copy to gitignored directory
+    - `./deploy.d/prep` - move files, rename, chmod, chown, etc. if necessary
+    - `./deploy.d/deps` - install dependencies
+    - `./deploy.d/link` - symlink files to system file structure
 
 ## Dependencies
 - libraries: `ssh`, `gh`, `curl`
@@ -23,7 +23,7 @@
 
 ## Config
 - `profile` : required by both install and use
-- `app.conf` install only
+- `app.conf` install only, depends on `profile` content
 - `user.conf` use only
 
 # Use: local

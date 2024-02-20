@@ -8,4 +8,4 @@ LINECMBN="\n${LINE} # ${LINEHASH}"
 FILE="${HOME}/.profile"
 
 grep -qF -- "${LINEHASH}" "${FILE}" || echo -e "${LINECMBN}" >> "${FILE}"
-cp -f "./.deps.d/profiledir" "${HOME}/.profiledir"
+cp -f "./deps.d/.profiledir" "${HOME}/.profiledir"

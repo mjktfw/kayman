@@ -16,7 +16,7 @@ repo_ssh="git@github.com:${REPO_USER}/${REPO_NAME}.git"
 
 (cd "${repo_local_path}" &&
   git pull &&
-  ./.hook &&
+  ./hook &&
   ./deploy)
 
 (cd "${repo_local_path}" &&

@@ -16,5 +16,4 @@ ln -sf "${APP_DIR}/app/profile" "${PROFILE_DIR}/${APP_NAME}.sh"
 
 [ -d "${CONF_DIR}/${APP_NAME}" ] ||
   mkdir -p "${CONF_DIR}/${APP_NAME}"
-ln -sf "${APP_DIR}/app/app.conf" "${CONF_DIR}/${APP_NAME}/"
-ln -sf "${APP_DIR}/app/user.conf" "${CONF_DIR}/${APP_NAME}/"
+ln -sf "${APP_DIR}/app/config"/*.conf "${CONF_DIR}/${APP_NAME}/"

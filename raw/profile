@@ -1,6 +1,7 @@
 #! /bin/bash
 
-export MJK_BASEDIR="${HOME}/lair"
-export KMN_DIR="${MJK_BASEDIR}/kayman"
+export KMN_DIR="${HOME}/lair/kayman"
+export MKS_DIR="${HOME}/lair/mkays"
+
 export KMN_CONFIG="${HOME}/.config/kayman/user.conf"
 export KMN_APP_CONFIG="${HOME}/.config/kayman/app.conf"

@@ -14,6 +14,6 @@ ln -sf "${APP_DIR}/app/${APP_PREFIX}-"* "${BIN_DIR}/"
   mkdir -p "${PROFILE_DIR}"
 ln -sf "${APP_DIR}/app/profile" "${PROFILE_DIR}/${APP_NAME}.sh"
 
-[ -d "${CONF_DIR}/${APP_NAME}" ] ||
-  mkdir -p "${CONF_DIR}/${APP_NAME}"
-ln -sf "${APP_DIR}/app/config"/*.conf "${CONF_DIR}/${APP_NAME}/"
+[ -d "${CONFIG_DIR}/${APP_NAME}" ] ||
+  mkdir -p "${CONFIG_DIR}/${APP_NAME}"
+ln -sf "${APP_DIR}/app/config"/*.conf "${CONFIG_DIR}/${APP_NAME}/"

@@ -22,6 +22,6 @@ while getopts ${OPTSTRING} opt; do
 done
 
 gh_baseurl="https://raw.githubusercontent.com/${PUBKEY_USERNAME}/${PUBKEY_REPO}/master"
-gh_key_url="${gh_baseurl}/${KEY_NAME}.pub"
+gh_key_url="${gh_baseurl}/pub/${KEY_NAME}.pub"
 
 curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"

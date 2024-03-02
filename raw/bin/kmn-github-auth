@@ -3,9 +3,6 @@
 APP_DIR="${KMN_DIR}"
 APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
 
-# sudo apt -y update &&
-#     sudo apt -y install ssh gh git
-
 # github.com/login/device
 # --git-protocol does not change how you login, it changes how subsequent git operations are handled
 # after signig with --web option, it still automatically creates and downloads the token

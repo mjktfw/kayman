@@ -1,4 +1,4 @@
 #! /bin/bash
 
-. "${KMN_DIR}/app/config/app.conf"
-. "${KMN_DIR}/app/config/user.conf"
+. "${APP_DIR}/app/config/app.conf"
+. "${APP_DIR}/app/config/user.conf"

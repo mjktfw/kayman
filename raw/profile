@@ -1,4 +1,3 @@
 #! /bin/bash
 
 export KMN_DIR="${HOME}/lair/kayman"
-export MKS_DIR="${HOME}/lair/mkays"

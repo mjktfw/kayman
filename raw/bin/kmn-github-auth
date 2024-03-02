@@ -1,6 +1,7 @@
 #! /bin/bash
 
-. "${KMN_DIR}/app/env"
+APP_DIR="${KMN_DIR}"
+APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
 
 # sudo apt -y update &&
 #     sudo apt -y install ssh gh git

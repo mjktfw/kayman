@@ -4,4 +4,7 @@ set -e
 [ ! -f "./app/user.conf" ] &&
     cp "./app/user.conf.default" "./app/user.conf"
 
+[ ! -f "./app/app.conf" ] &&
+    cp "./app/app.conf.default" "./app/app.conf"
+
 exit 0

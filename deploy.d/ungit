@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-cp -R ./src/. ./app
+cp -R ./raw/. ./app

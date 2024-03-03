@@ -4,7 +4,7 @@ set -e
 [ -f ./app/unlink ] &&
     ./app/unlink
 
-DEPLOY_DIR="${PWD}/.deploy.d"
+DEPLOY_DIR="${PWD}/deploy.d"
 
 "${DEPLOY_DIR}/ungit"
 "${DEPLOY_DIR}/prep"

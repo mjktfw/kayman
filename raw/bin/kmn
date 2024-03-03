@@ -1,0 +1,32 @@
+#! /bin/bash
+
+kmn__test() {
+  ${BIN_DIR}/kmn-test
+}
+
+kmn() {
+
+  APP_DIR="${KMN_DIR}"
+  APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
+
+  local cmdname=$1; shift
+  if type "kmn__$cmdname" >/dev/null 2>&1; then
+    "kmn__$cmdname" "$@"
+  else
+    command kmn "$cmdname" "$@" # call the **real** kmn command
+  fi
+}
+
+# if invoked as a script rather than sourced, call function named on argv via the below;
+# note that this must be the first operation other than a function definition
+# for $_ to successfully distinguish between sourcing and invocation:
+[[ $_ != $0 ]] && return
+
+# make sure we actually *did* get passed a valid function name
+if declare -f "$1" >/dev/null 2>&1; then
+  # invoke that function, passing arguments through
+  "$@" # same as "$1" "$2" "$3" ... for full argument list
+else
+  echo "Function $1 not recognized" >&2
+  exit 1
+fi

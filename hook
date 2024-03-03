@@ -4,6 +4,9 @@ set -e
 hook_path="./.git/hooks/post-merge"
 
 case "$1" in
+  )
+    $0 up
+    ;;
   up|on)
     ln -sf ../../deploy "${hook_path}"
     ;;
@@ -11,7 +14,7 @@ case "$1" in
     rm -rf "${hook_path}"
     ;;
   *)
-    echo "Valid arguments are: up/on, down/off."
+    echo "Valid arguments are: <NULL>/up/on, down/off."
     exit 1
     ;;
 esac

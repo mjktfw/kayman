@@ -1,2 +1,4 @@
 /app/
 /app/**
+
+/raw/config/*.conf

@@ -7,7 +7,7 @@
 - script names follow `${PREFIX}-*` pattern
 
 ## Steps
-- `./.hook` - enable `post-merge` hook
+- `./hook` - enable `post-merge` hook
 - `./deploy` :
     - `./app/unlink` - unlink previous version, if exists
     - `./deploy.d/ungit` - copy to gitignored directory
@@ -22,13 +22,13 @@
     - follows 'XDG Base Directory Specification'
 
 ## Config
-- `profile` : required by both install and use
-- `app.conf` install only, depends on `profile` content
-- `user.conf` use only
+- `profile`
+- `app.conf`
+- `user.conf`
 
 # Use: local
 ## Configure:
-- `app.conf`: setup git email
+- `user.conf`: setup git email
 
 ## First run and Setup
 - `./kmn-git-config`: configure git

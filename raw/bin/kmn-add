@@ -7,7 +7,7 @@ OPTSTRING=":r:k:"
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     r)
-      PUBKEY_REPO="${OPTARG}"
+      PUBKEY_DIR="${OPTARG}"
       ;;
     k)
       KEY_NAME="${OPTARG}"
@@ -19,12 +19,12 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-repo_local_path="${PUBKEY_BASEDIR}/${PUBKEY_REPO}"
-key_pub_path="${HOME}/.ssh/${KEY_NAME}.pub"
+pubkey_path="${HOME}/.ssh/${KEY_NAME}.pub"
 
-cp "${key_pub_path}" "${repo_local_path}"
+# TODO: assure it's public, not private
+cp "${pubkey_path}" "${PUBKEY_DIR}/pub/"
 
-(cd "${repo_local_path}" &&
+(cd "${PUBKEY_DIR}" &&
     git add --all . &&
     git commit -m "${KEY_NAME}";
     git push)

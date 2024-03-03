@@ -16,7 +16,7 @@ while getopts ${OPTSTRING} opt; do
   esac
 done
 
-key_pub_path="${HOME}/.ssh/${KEY_NAME}.pub"
+pubkey_path="${HOME}/.ssh/${KEY_NAME}.pub"
 
-gh ssh-key add "${key_pub_path}" --type authentication
+gh ssh-key add "${pubkey_path}" --type authentication
 gh config set --host github.com git_protocol ssh

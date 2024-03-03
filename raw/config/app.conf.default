@@ -6,6 +6,3 @@ APP_PREFIX="kmn"
 PROFILE_DIR="${HOME}/.profile.d"
 BIN_DIR="${HOME}/.local/bin"
 CONFIG_DIR="${HOME}/.config"
-
-# TODO: directories for dependencies
-MKS_DIR="${HOME}/lair/mkays"

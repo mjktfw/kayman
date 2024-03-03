@@ -1,18 +1,15 @@
 #! /bin/bash
 set -e
 
-set -o allexport
-. ./app/profile
-. ./app/app.conf
-set +o allexport
+DEPS_DIR="${PWD}/deploy.d/deps.d"
 
 type -p ssh-keygen >/dev/null ||
-  ./.deps.d/install-ssh
+  "${DEPS_DIR}/install-ssh"
 
 type -p gh >/dev/null ||
-  ./.deps.d/install-gh
+  "${DEPS_DIR}/install-gh"
 
 [ -f "${HOME}/.profiledir" ] ||
-  ./.deps.d/install-profiledir
+  "${DEPS_DIR}/install-profiledir"
 
-./.deps.d/install-mkays
+"${DEPS_DIR}/install-mkays"

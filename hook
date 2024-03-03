@@ -4,10 +4,7 @@ set -e
 hook_path="./.git/hooks/post-merge"
 
 case "$1" in
-  )
-    $0 up
-    ;;
-  up|on)
+  ""|up|on)
     ln -sf ../../deploy "${hook_path}"
     ;;
   down|off)

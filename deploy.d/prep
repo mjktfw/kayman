@@ -1,10 +1,12 @@
 #! /bin/bash
 set -e
 
-[ ! -f "./app/user.conf" ] &&
-    cp "./app/user.conf.default" "./app/user.conf"
+CONF_DIR="./app/config"
 
-[ ! -f "./app/app.conf" ] &&
-    cp "./app/app.conf.default" "./app/app.conf"
+[ ! -f "${CONF_DIR}/user.conf" ] &&
+    cp "${CONF_DIR}/user.conf.default" "${CONF_DIR}/user.conf"
+
+[ ! -f "${CONF_DIR}/app.conf" ] &&
+    cp "${CONF_DIR}/app.conf.default" "${CONF_DIR}/app.conf"
 
 exit 0

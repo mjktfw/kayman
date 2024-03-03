@@ -1,6 +1,8 @@
 #! /bin/bash
 
-. ./app/app.conf
+set -o allexport
+. ./app/config/app.conf
+set +o allexport
 
 rm -rf "${PROFILE_DIR}/${APP_NAME}.sh"
 

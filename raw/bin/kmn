@@ -26,7 +26,7 @@ kmn() {
 echo "test 1"
 # make sure we actually *did* get passed a valid function name
 if declare -f "kmn__$1" >/dev/null 2>&1; then
-  echo "$@"
+  echo "1 $@"
   # invoke that function, passing arguments through
   "$@" # same as "$1" "$2" "$3" ... for full argument list
 else

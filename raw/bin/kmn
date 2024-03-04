@@ -2,6 +2,7 @@
 
 kmn__test() {
   ${BIN_DIR}/kmn-test
+  echo ok
 }
 
 kmn() {

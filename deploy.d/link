@@ -11,7 +11,7 @@ ln -sf "${PWD}/app/profile" "${PROFILE_DIR}/${APP_NAME}.sh"
 
 [ -d "${BIN_DIR}" ] ||
   mkdir -p "${BIN_DIR}"
-ln -sf ${PWD}/app/${APP_PREFIX} "${BIN_DIR}/"
+ln -sf ${PWD}/app/bin/${APP_PREFIX} "${BIN_DIR}/"
 
 [ -d "${CONFIG_DIR}/${APP_NAME}" ] ||
   mkdir -p "${CONFIG_DIR}/${APP_NAME}"

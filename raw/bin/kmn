@@ -22,6 +22,7 @@ kmn() {
 # for $_ to successfully distinguish between sourcing and invocation:
 [[ $_ != $0 ]] && return
 
+echo $1
 # make sure we actually *did* get passed a valid function name
 if declare -f "$1" >/dev/null 2>&1; then
   # invoke that function, passing arguments through

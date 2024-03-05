@@ -78,7 +78,7 @@ function __keygen() (
     -C "${opts[KEY_NAME]}" \
     -f "${key_priv_path}"
 
-  if (( ${opts[d]} == "1" )); then
+  if (( ${opts[d]} == 1 )); then
     ln -sf "${key_priv_path}" "${key_id_path}"
     ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
   fi

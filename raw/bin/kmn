@@ -80,6 +80,7 @@ function main() (
 
   if (( ${#} == 0 )); then
     echo >&2 "No arguments";
+    exit 1
   fi
 
   case "${args[0]}" in

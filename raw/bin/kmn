@@ -79,7 +79,7 @@ function main() (
   # caller
 
   if (( ${#} == 0 )); then
-    echo >&2 "No arguments";
+    echo >&2 "Missing arguments"
     exit 1
   fi
 

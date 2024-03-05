@@ -15,7 +15,7 @@ function __add() (
         -- ) break ;;
         -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
         -d | --dir ) opts[PUBKEY_DIR]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Error in usage." ; exit 1 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
     done
@@ -55,7 +55,7 @@ function __keygen() (
         -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
         -t | --key-type ) opts[KEY_TYPE]="${2:?$ERR_MSG}" ; shift 2 ;;
         -d | --make-default ) opts[d]="1" ; shift ;;
-        -* ) echo >&2 "$0: Error in usage." ; exit 1 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
     done
@@ -87,6 +87,40 @@ function __keygen() (
   exit 0;
 )
 
+function __copy() (
+
+  ################################################################################
+  # arguments
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -u | --pubkey-user ) opts[PUBKEY_USER]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+  ################################################################################
+  # body
+  local gh_baseurl="https://raw.githubusercontent.com/${opts[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
+  local gh_key_url="${gh_baseurl}/pub/${opts[KEY_NAME]}.pub"
+
+  curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
+
+  exit 0;
+)
+
 function main() (
 
   ################################################################################
@@ -99,7 +133,7 @@ function main() (
         -- ) break ;;
         # -c | --center ) opts[c]="$2" ; shift 2 ;;
         # -V | --version ) version ; exit 0 ;;
-        -* ) echo >&2 "$0: Error in usage." ; exit 1 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
     done
@@ -125,6 +159,7 @@ function main() (
   case "${args[0]}" in
     keygen ) __keygen "${args[@]:1}" ;;
     add ) __add "${args[@]:1}" ;;
+    copy ) __copy "${args[@]:1}" ;;
     * )
       echo >&2 "Unknown command: $1";
       # main_help 1;

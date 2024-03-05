@@ -6,20 +6,15 @@
 
 function __add() (
 
-  # if [[ ${#} == 0 ]]; then
-  #     decrypt_help;
-  # fi
-
   ################################################################################
   # arguments
-
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
         -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -d | --dir ) opts[s]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -d | --dir ) opts[PUBKEY_DIR]="${2:?$ERR_MSG}" ; shift 2 ;;
         -* ) echo >&2 "$0: Error in usage." ; exit 1 ;;
         * )  break ;;
       esac
@@ -36,14 +31,58 @@ function __add() (
   # body
 
   local pubkey_path="${HOME}/.ssh/${opts[KEY_NAME]}.pub"
-  echo $pubkey_path
-  # # TODO: assure it's public, not private
-  # cp "${pubkey_path}" "${PUBKEY_DIR}/pub/"
 
-  # (cd "${PUBKEY_DIR}" &&
-  #     git add --all . &&
-  #     git commit -m "${KEY_NAME}";
-  #     git push)
+  # TODO: assure it's public, not private
+  cp "${pubkey_path}" "${opts[PUBKEY_DIR]}/pub/"
+
+  (cd "${opts[PUBKEY_DIR]}" &&
+      git add --all . &&
+      git commit -m "${opts[KEY_NAME]}";
+      git push)
+
+  exit 0;
+)
+
+function __keygen() (
+
+  ################################################################################
+  # arguments
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -t | --key-type ) opts[KEY_TYPE]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -d | --make-default ) opts[d]="1" ; shift ;;
+        -* ) echo >&2 "$0: Error in usage." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+  ################################################################################
+  # body
+
+  local key_priv_path="${HOME}/.ssh/${opts[KEY_NAME]}"
+  local key_id_path="${HOME}/.ssh/id_${opts[KEY_TYPE]}"
+
+  # automatically creates dir, if non-existing
+  ssh-keygen -q -t "${opts[KEY_TYPE]}" \
+    -C "${opts[KEY_NAME]}" \
+    -f "${key_priv_path}"
+
+  if (( ${opts[d]} == "1" )); then
+    ln -sf "${key_priv_path}" "${key_id_path}"
+    ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
+  fi
+  # TODO: better create key in the working directory and add another command to make it default
 
   exit 0;
 )

@@ -1,8 +1,8 @@
 #! /bin/bash
 # https://github.com/shakibamoshiri/bash-CLI-template
 
-  APP_DIR="${KMN_DIR}"
-  APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
+APP_DIR="${KMN_DIR}"
+APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
 
 function __add() (
 
@@ -119,6 +119,155 @@ function __copy() (
   curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
 
   exit 0;
+)
+
+function __git_config() (
+
+  ################################################################################
+  # arguments
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -u | --git-username ) opts[GIT_USERNAME]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -e | --git-email ) opts[GIT_EMAIL]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+  ################################################################################
+  # body
+  # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
+  # TODO: or better for windows: where.exe ssh.exe
+  # TODO: must be quoted due to spaces!
+  # TODO: SSH_CMD=$(where.exe ssh.exe)
+  # TODO: git config core.sshCommand "\"$CMD\""
+
+  git config --global user.email "${opts[GIT_EMAIL]}"
+  git config --global user.name "${opts[GIT_USERNAME]}"
+
+  exit 0;
+)
+
+function __github_auth() (
+
+  ################################################################################
+  # arguments
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -s | --gh-scopes ) opts[GH_SCOPES]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+  ################################################################################
+  # body
+  # github.com/login/device
+  # --git-protocol does not change how you login, it changes how subsequent git operations are handled
+  # after signig with --web option, it still automatically creates and downloads the token
+  echo "Open URL: github.com/login/device"
+  gh auth status ||
+      gh auth login --hostname github.com \
+      --git-protocol https \
+      --web \
+      --scopes "${opts[GH_SCOPES]}"
+
+  gh config set --host github.com prompt disabled
+
+  exit 0;
+)
+
+function __github_ssh() (
+
+  ################################################################################
+  # arguments
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+  ################################################################################
+  # body
+  pubkey_path="${HOME}/.ssh/${opts[KEY_NAME]}.pub"
+
+  gh ssh-key add "${pubkey_path}" --type authentication
+  gh config set --host github.com git_protocol ssh
+
+  exit 0
+)
+
+function __setup_mkays() (
+
+  ################################################################################
+  # arguments
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -u | --pubkey-username ) opts[PUBKEY_USERNAME]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -d | --pubkey-dir ) opts[PUBKEY_DIR]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+  ################################################################################
+  # body
+  repo_ssl="https://github.com/${opts[PUBKEY_USERNAME]}/${opts[PUBKEY_REPO]}.git"
+  repo_ssh="git@github.com:${opts[PUBKEY_USERNAME]}/${opts[PUBKEY_REPO]}.git"
+
+  [ ! -d "${opts[PUBKEY_DIR]}/.git" ] &&
+    git clone "${repo_ssl}" "${opts[PUBKEY_DIR]}"
+
+  (cd "${opts[PUBKEY_DIR]}" &&
+    git pull)
+
+  (cd "${opts[PUBKEY_DIR]}" &&
+    git remote set-url --push origin "${repo_ssh}")
+
+  exit 0
 )
 
 function main() (

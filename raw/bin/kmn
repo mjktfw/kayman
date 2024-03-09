@@ -15,13 +15,31 @@ set -o pipefail # exit on pipe failure
 ################################################################################
 # environment
 ################################################################################
-APP_DIR="${KMN_DIR}"
-APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
+# APP_DIR="${KMN_DIR}"
+# APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
 
 ################################################################################
 # global variable
 ################################################################################
-declare -r ERR_MSG="Error: a value is needed for '$1'";
+function err_empty_val () {
+  echo >&2 "$1: a value is needed for '$2'"
+  exit 1
+}
+
+function err_unknown_opt () {
+  echo >&2 "$1: Unknown option: '$2'"
+  exit 1
+}
+
+function err_missing_args() {
+  echo >&2 "$1: Missing arguments"
+  exit 1
+}
+
+function err_unknown_cmd () {
+  echo >&2 "$1: Unknown command: '$2'"
+  exit 1
+}
 
 ################################################################################
 # functions
@@ -30,13 +48,14 @@ declare -r ERR_MSG="Error: a value is needed for '$1'";
 function __add() (
 #-----------------------------------------------------------------------------
   # arguments
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -d | --dir ) opts[PUBKEY_DIR]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -d | --dir ) opts[PUBKEY_DIR]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
@@ -69,13 +88,14 @@ function __keygen() (
 
 #-----------------------------------------------------------------------------
   # arguments
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -t | --key-type ) opts[KEY_TYPE]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -t | --key-type ) opts[KEY_TYPE]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -d | --make-default ) opts[d]="1" ; shift ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
@@ -113,14 +133,15 @@ function __copy() (
 
 #-----------------------------------------------------------------------------
   # arguments
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -u | --pubkey-user ) opts[PUBKEY_USER]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -u | --pubkey-user ) opts[PUBKEY_USER]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
@@ -147,13 +168,14 @@ function __git_config() (
 
 #-----------------------------------------------------------------------------
   # arguments
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -u | --git-username ) opts[GIT_USERNAME]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -e | --git-email ) opts[GIT_EMAIL]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -u | --git-username ) opts[GIT_USERNAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -e | --git-email ) opts[GIT_EMAIL]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
@@ -180,16 +202,65 @@ function __git_config() (
   exit 0;
 )
 
-function __github_auth() (
+function __github() (
 
 #-----------------------------------------------------------------------------
   # arguments
+
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -s | --gh-scopes ) opts[GH_SCOPES]="${2:?$ERR_MSG}" ; shift 2 ;;
+        # -c | --center ) opts[c]="$2" ; shift 2 ;;
+        # -V | --version ) version ; exit 0 ;;
+        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        * )  break ;;
+      esac
+    done
+
+    args=("$@")
+  }
+
+  declare args
+  declare -A opts
+  parse_opts $@
+
+#-----------------------------------------------------------------------------
+  # body
+
+#-----------------------------------------------------------------------------
+  # caller
+
+  [[ "${#args[@]}" == 0 ]] &&
+    err_missing_args $0
+
+  local cmd="${args[0]}"
+  local call_args="${args[@]:1}"
+
+  case "${cmd}" in
+    auth ) __github_auth "${call_args}" ;;
+    ssh ) __github_ssh "${call_args}" ;;
+    * )
+      echo >&2 "$0: Unknown command: $1";
+      # main_help 1;
+      exit 1;
+    ;;
+  esac
+)
+
+function __github_auth() (
+
+#-----------------------------------------------------------------------------
+  # arguments
+  fname="${FUNCNAME[0]}"
+  function parse_opts() {
+
+    while [ ${#} -gt 0 ]; do
+      case "$1" in
+        -- ) break ;;
+        -s | --gh-scopes ) opts[GH_SCOPES]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
@@ -223,12 +294,13 @@ function __github_ssh() (
 
 #-----------------------------------------------------------------------------
   # arguments
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
@@ -255,14 +327,15 @@ function __setup_mkays() (
 
 #-----------------------------------------------------------------------------
   # arguments
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        -u | --pubkey-username ) opts[PUBKEY_USERNAME]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$ERR_MSG}" ; shift 2 ;;
-        -d | --pubkey-dir ) opts[PUBKEY_DIR]="${2:?$ERR_MSG}" ; shift 2 ;;
+        -u | --pubkey-username ) opts[PUBKEY_USERNAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
+        -d | --pubkey-dir ) opts[PUBKEY_DIR]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
         * )  break ;;
       esac
@@ -297,14 +370,15 @@ function main() (
 #-----------------------------------------------------------------------------
   # arguments
 
+  fname="${FUNCNAME[0]}"
   function parse_opts() {
 
     while [ ${#} -gt 0 ]; do
       case "$1" in
         -- ) break ;;
-        # -c | --center ) opts[c]="$2" ; shift 2 ;;
+        -t | --test ) opts[t]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
         # -V | --version ) version ; exit 0 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) err_unknown_opt "${fname}""$1" ;;
         * )  break ;;
       esac
     done
@@ -322,24 +396,20 @@ function main() (
 #-----------------------------------------------------------------------------
   # caller
 
-  if (( ${#} == 0 )); then
-    echo >&2 "Missing arguments"
-    exit 1
-  fi
+  [[ "${#args[@]}" == 0 ]] &&
+    err_missing_args "${FUNCNAME[0]}"
 
-  case "${args[0]}" in
-    keygen ) __keygen "${args[@]:1}" ;;
-    add ) __add "${args[@]:1}" ;;
-    copy ) __copy "${args[@]:1}" ;;
-    git-config ) __git_config "${args[@]:1}" ;;
-    github-auth ) __github_auth "${args[@]:1}" ;;
-    github-ssh ) __github_ssh "${args[@]:1}" ;;
-    setup-mkays __setup_mkays "${args[@]:1}" ;;
-    * )
-      echo >&2 "Unknown command: $1";
-      # main_help 1;
-      exit 1;
-    ;;
+  local cmd="${args[0]}"
+  local call_args="${args[@]:1}"
+
+  case "${cmd}" in
+    keygen ) __keygen "${call_args}" ;;
+    add ) __add "${call_args}" ;;
+    copy ) __copy "${call_args}" ;;
+    git-config ) __git_config "${call_args}" ;;
+    github ) __github "${call_args}" ;;
+    setup-mkays ) __setup_mkays "${call_args}" ;;
+    * ) err_unknown_cmd "${FUNCNAME[0]}" "${cmd}" ;;
   esac
 )
 

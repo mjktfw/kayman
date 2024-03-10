@@ -80,27 +80,27 @@ function _set_opt2 () {
 
 function _default_opts () {
 
-  OPTNAMES=($OPTNAMES)
-  if [[ ${#OPTNAMES[@]} -gt 0 ]] ; then
-    for optnm in ${OPTNAMES[@]} ; do
-      OPTS[$optnm]="${OPTS[$optnm]:-${!optnm}}"
-    done
-  fi
+  declare optnms=($OPTNAMES)
 
+  [ ${#optnms[@]} -gt 0 ] && return 0
+  echo test
+  for optnm in ${optnms[@]} ; do
+    : ${OPTS[$optnm]:=${!optnm}}
+  done
 }
 
 function _call_cmd() {
   _err_cmd_null
 
   if [[ "${FUNCNAME[1]}" == "main" ]] ; then
-    local call_fun="__${ARGS[0]}"
+    declare call_fun="__${ARGS[0]}"
   else
-    local call_fun="${FUNCNAME[1]}_${ARGS[0]}"
+    declare call_fun="${FUNCNAME[1]}_${ARGS[0]}"
   fi
 
-  local cmds="@(${cmds})"
+  declare cmds="@(${CMDS})"
   case "${ARGS[0]}" in
-    $cmds ) "${call_fun}" "${ARGS[@]:1}" ;;
+    $cmds ) "$call_fun" "${ARGS[@]:1}" ;;
     * ) _err_cmd_undef "${ARGS[0]}" ;;
   esac
 }

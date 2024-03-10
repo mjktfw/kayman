@@ -113,7 +113,7 @@ function __add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME PUBKEY_DIR"
+  declare OPTNAMES="KEY_NAME PUBKEY_DIR"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -151,7 +151,7 @@ function __keygen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME KEY_TYPE"
+  declare OPTNAMES="KEY_NAME KEY_TYPE"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -194,7 +194,7 @@ function __copy() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
+  declare OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -228,11 +228,11 @@ function __git() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="config"
+  declare CMDS="config"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES=""
+  declare OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -258,7 +258,7 @@ function __git_config() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="GIT_USERNAME GIT_EMAIL"
+  declare OPTNAMES="GIT_USERNAME GIT_EMAIL"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -296,11 +296,11 @@ function __github() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="auth|ssh"
+  declare CMDS="auth|ssh"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES=""
+  declare OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -329,7 +329,7 @@ function __github_auth() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="GH_SCOPES"
+  declare OPTNAMES="GH_SCOPES"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -369,7 +369,7 @@ function __github_ssh() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME"
+  declare OPTNAMES="KEY_NAME"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -401,11 +401,11 @@ function __mkays() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="setup"
+  declare CMDS="setup"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES=""
+  declare OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -434,7 +434,7 @@ function __mkays_setup() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
+  declare OPTNAMES="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -475,11 +475,11 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="keygen|add|copy|git|github|mkays"
+  declare CMDS="keygen|add|copy|git|github|mkays"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES=""
+  declare OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -505,11 +505,11 @@ function sample() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="add|del|sum"
+  declare CMDS="add|del|sum"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  OPTNAMES="SINGLE DOUBLE"
+  declare OPTNAMES="SINGLE DOUBLE"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in

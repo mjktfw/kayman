@@ -12,6 +12,8 @@ set -e # exit immediately on errors
 set -u # exit on not assigned variables
 set -o pipefail # exit on pipe failure
 
+shopt -s extglob
+
 ################################################################################
 # environment
 ################################################################################
@@ -21,106 +23,165 @@ set -o pipefail # exit on pipe failure
 ################################################################################
 # global variable
 ################################################################################
-function err_empty_val () {
+function _err_empty_val () {
   echo >&2 "$1: a value is needed for '$2'"
   exit 1
 }
 
-function err_unknown_opt () {
+function _err_empty_val2 () {
+  _err_empty_val "${FUNCNAME[3]}" "$1"
+}
+
+function _err_opt_raw () {
   echo >&2 "$1: Unknown option: '$2'"
   exit 1
 }
 
-function err_missing_args() {
-  echo >&2 "$1: Missing arguments"
+function _err_opt () {
+  _err_opt_raw "${FUNCNAME[2]}" "${ARGS[0]}"
+}
+
+function _err_cmd_null_raw() {
+  echo >&2 "$1: Missing command"
   exit 1
 }
 
-function err_unknown_cmd () {
-  echo >&2 "$1: Unknown command: '$2'"
+function _err_cmd_null() {
+  if [[ "${#ARGS[@]}" == 0 ]] ; then
+    _err_cmd_null_raw "${FUNCNAME[2]}"
+  fi
+}
+
+function _err_cmd_undef_raw () {
+  echo >&2 "$1: Undefined command: '$2'"
   exit 1
 }
+
+function _err_cmd_undef () {
+  _err_cmd_undef_raw "${FUNCNAME[2]}" "$1"
+}
+
+function _set_opt () {
+  local opt_name=$1
+  local opt_string="${ARGS[0]}"
+
+  OPTS[$opt_name]="1"
+  ARGS=("${ARGS[@]:1}")
+}
+
+function _set_opt2 () {
+  local opt_name=$1
+  local opt_string="${ARGS[0]}"
+  local opt_val="${ARGS[1]:?$(_err_empty_val2 $opt_string)}"
+
+  OPTS[$opt_name]="${opt_val}"
+  ARGS=("${ARGS[@]:2}")
+}
+
+function _default_opts () {
+
+  OPTNAMES=($OPTNAMES)
+  if [[ ${#OPTNAMES[@]} -gt 0 ]] ; then
+    for optnm in ${OPTNAMES[@]} ; do
+      OPTS[$optnm]="${OPTS[$optnm]:-${!optnm}}"
+    done
+  fi
+
+}
+
+function _call_cmd() {
+  _err_cmd_null
+
+  if [[ "${FUNCNAME[1]}" == "main" ]] ; then
+    local call_fun="__${ARGS[0]}"
+  else
+    local call_fun="${FUNCNAME[1]}_${ARGS[0]}"
+  fi
+
+  local cmds="@(${cmds})"
+  case "${ARGS[0]}" in
+    $cmds ) "${call_fun}" "${ARGS[@]:1}" ;;
+    * ) _err_cmd_undef "${ARGS[0]}" ;;
+  esac
+  }
 
 ################################################################################
 # functions
 ################################################################################
 
 function __add() (
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
-  function parse_opts() {
 
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="KEY_NAME PUBKEY_DIR"
+  function parse_opts() {
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -k | --key-name ) _set_opt2 KEY_NAME ;;
+        -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -d | --dir ) opts[PUBKEY_DIR]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  # local pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
 
-  local pubkey_path="${HOME}/.ssh/${opts[KEY_NAME]}.pub"
+  # # TODO: assure it's public, not private
+  # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
 
-  # TODO: assure it's public, not private
-  cp "${pubkey_path}" "${opts[PUBKEY_DIR]}/pub/"
+  # (cd "${OPTS[PUBKEY_DIR]}" &&
+  #   git add --all . &&
+  #   git commit -m "${OPTS[KEY_NAME]}";
+  #   git push)
 
-  (cd "${opts[PUBKEY_DIR]}" &&
-      git add --all . &&
-      git commit -m "${opts[KEY_NAME]}";
-      git push)
-
-  exit 0;
+  # exit 0;
 )
 
 function __keygen() (
 
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="KEY_NAME KEY_TYPE"
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -k | --key-name ) _set_opt2 KEY_NAME ;;
+        -t | --key-type ) _set_opt2 KEY_TYPE ;;
+        -d | --make-default ) _set_opt MAKE_DEFAULT ;;
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -t | --key-type ) opts[KEY_TYPE]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -d | --make-default ) opts[d]="1" ; shift ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
-
-  local key_priv_path="${HOME}/.ssh/${opts[KEY_NAME]}"
-  local key_id_path="${HOME}/.ssh/id_${opts[KEY_TYPE]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  local key_priv_path="${HOME}/.ssh/${OPTS[KEY_NAME]}"
+  local key_id_path="${HOME}/.ssh/id_${OPTS[KEY_TYPE]}"
 
   # automatically creates dir, if non-existing
-  ssh-keygen -q -t "${opts[KEY_TYPE]}" \
-    -C "${opts[KEY_NAME]}" \
+  ssh-keygen -q -t "${OPTS[KEY_TYPE]}" \
+    -C "${OPTS[KEY_NAME]}" \
     -f "${key_priv_path}"
 
-  if (( ${opts[d]} == 1 )); then
+  if (( ${OPTS[d]} == 1 )); then
     ln -sf "${key_priv_path}" "${key_id_path}"
     ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
   fi
@@ -131,150 +192,164 @@ function __keygen() (
 
 function __copy() (
 
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -k | --key-name ) _set_opt2 KEY_NAME ;;
+        -r | --pubkey-repo ) _set_opt2 PUBKEY_REPO ;;
+        -u | --pubkey-user ) _set_opt2 PUBKEY_USER ;;
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -u | --pubkey-user ) opts[PUBKEY_USER]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
-  local gh_baseurl="https://raw.githubusercontent.com/${opts[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
-  local gh_key_url="${gh_baseurl}/pub/${opts[KEY_NAME]}.pub"
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  local gh_baseurl="https://raw.githubusercontent.com/${OPTS[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
+  local gh_key_url="${gh_baseurl}/pub/${OPTS[KEY_NAME]}.pub"
 
   curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
 
   exit 0;
 )
 
-function __git_config() (
+function __git() (
 
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare cmds="config"
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES=""
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
         -- ) break ;;
-        -u | --git-username ) opts[GIT_USERNAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -e | --git-email ) opts[GIT_EMAIL]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  _call_cmd
+)
+
+function __git_config() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="GIT_USERNAME GIT_EMAIL"
+  function parse_opts() {
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -u | --git-username ) _set_opt2 GIT_USERNAME ;;
+        -e | --git-email ) _set_opt2 GIT_EMAIL ;;
+        -- ) break ;;
+        -* ) _err_opt ;;
+        * )  break ;;
+      esac
+    done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
   # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
   # TODO: or better for windows: where.exe ssh.exe
   # TODO: must be quoted due to spaces!
   # TODO: SSH_CMD=$(where.exe ssh.exe)
   # TODO: git config core.sshCommand "\"$CMD\""
 
-  git config --global user.email "${opts[GIT_EMAIL]}"
-  git config --global user.name "${opts[GIT_USERNAME]}"
+  git config --global user.email "${OPTS[GIT_EMAIL]}"
+  git config --global user.name "${OPTS[GIT_USERNAME]}"
 
   exit 0;
 )
 
 function __github() (
 
-#-----------------------------------------------------------------------------
-  # arguments
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare cmds="auth|ssh"
 
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES=""
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
         -- ) break ;;
-        # -c | --center ) opts[c]="$2" ; shift 2 ;;
-        # -V | --version ) version ; exit 0 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
 
-#-----------------------------------------------------------------------------
-  # caller
-
-  [[ "${#args[@]}" == 0 ]] &&
-    err_missing_args $0
-
-  local cmd="${args[0]}"
-  local call_args="${args[@]:1}"
-
-  case "${cmd}" in
-    auth ) __github_auth "${call_args}" ;;
-    ssh ) __github_ssh "${call_args}" ;;
-    * )
-      echo >&2 "$0: Unknown command: $1";
-      # main_help 1;
-      exit 1;
-    ;;
-  esac
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  _call_cmd
 )
 
 function __github_auth() (
 
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="GH_SCOPES"
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -s | --gh-scopes ) _set_opt2 GH_SCOPES ;;
         -- ) break ;;
-        -s | --gh-scopes ) opts[GH_SCOPES]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
   # github.com/login/device
   # --git-protocol does not change how you login, it changes how subsequent git operations are handled
   # after signig with --web option, it still automatically creates and downloads the token
@@ -283,7 +358,7 @@ function __github_auth() (
       gh auth login --hostname github.com \
       --git-protocol https \
       --web \
-      --scopes "${opts[GH_SCOPES]}"
+      --scopes "${OPTS[GH_SCOPES]}"
 
   gh config set --host github.com prompt disabled
 
@@ -292,30 +367,29 @@ function __github_auth() (
 
 function __github_ssh() (
 
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="KEY_NAME"
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -k | --key-name ) _set_opt2 KEY_NAME ;;
         -- ) break ;;
-        -k | --key-name ) opts[KEY_NAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
-  pubkey_path="${HOME}/.ssh/${opts[KEY_NAME]}.pub"
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
 
   gh ssh-key add "${pubkey_path}" --type authentication
   gh config set --host github.com git_protocol ssh
@@ -323,43 +397,75 @@ function __github_ssh() (
   exit 0
 )
 
-function __setup_mkays() (
+function __mkays() (
 
-#-----------------------------------------------------------------------------
-  # arguments
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare cmds="setup"
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES=""
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
         -- ) break ;;
-        -u | --pubkey-username ) opts[PUBKEY_USERNAME]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -r | --pubkey-repo ) opts[PUBKEY_REPO]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -d | --pubkey-dir ) opts[PUBKEY_DIR]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        -* ) echo >&2 "$0: Invalid option: $1." ; exit 1 ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
-  repo_ssl="https://github.com/${opts[PUBKEY_USERNAME]}/${opts[PUBKEY_REPO]}.git"
-  repo_ssh="git@github.com:${opts[PUBKEY_USERNAME]}/${opts[PUBKEY_REPO]}.git"
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
 
-  [ ! -d "${opts[PUBKEY_DIR]}/.git" ] &&
-    git clone "${repo_ssl}" "${opts[PUBKEY_DIR]}"
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  _call_cmd
+)
 
-  (cd "${opts[PUBKEY_DIR]}" &&
+function __mkays_setup() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
+  function parse_opts() {
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -u | --pubkey-username ) _set_opt2 PUBKEY_USERNAME;;
+        -r | --pubkey-repo ) _set_opt2 PUBKEY_REPO ;;
+        -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
+        -- ) break ;;
+        -* ) _err_opt ;;
+        * )  break ;;
+      esac
+    done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
+  repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
+
+  [ ! -d "${OPTS[PUBKEY_DIR]}/.git" ] &&
+    git clone "${repo_ssl}" "${OPTS[PUBKEY_DIR]}"
+
+  (cd "${OPTS[PUBKEY_DIR]}" &&
     git pull)
 
-  (cd "${opts[PUBKEY_DIR]}" &&
+  (cd "${OPTS[PUBKEY_DIR]}" &&
     git remote set-url --push origin "${repo_ssh}")
 
   exit 0
@@ -367,50 +473,72 @@ function __setup_mkays() (
 
 function main() (
 
-#-----------------------------------------------------------------------------
-  # arguments
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare cmds="keygen|add|copy|git|github|mkays"
 
-  fname="${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES=""
   function parse_opts() {
-
-    while [ ${#} -gt 0 ]; do
-      case "$1" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
         -- ) break ;;
-        -t | --test ) opts[t]="${2:?$(err_empty_val "${fname}" $1)}" ; shift 2 ;;
-        # -V | --version ) version ; exit 0 ;;
-        -* ) err_unknown_opt "${fname}""$1" ;;
+        -* ) _err_opt ;;
         * )  break ;;
       esac
     done
-
-    args=("$@")
   }
 
-  declare args
-  declare -A opts
-  parse_opts $@
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
 
-#-----------------------------------------------------------------------------
-  # body
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  _call_cmd
+)
 
-#-----------------------------------------------------------------------------
-  # caller
+function sample() (
 
-  [[ "${#args[@]}" == 0 ]] &&
-    err_missing_args "${FUNCNAME[0]}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare cmds="add|del|sum"
 
-  local cmd="${args[0]}"
-  local call_args="${args[@]:1}"
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="SINGLE DOUBLE"
+  function parse_opts() {
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -s | --single ) _set_opt SINGLE ;;
+        -d | --double ) _set_opt2 DOUBLE ;;
+        -V | --version ) echo "Version: xD" ; exit 0 ;;
+        -- ) break ;;
+        -* ) _err_opt ;;
+        * )  break ;;
+      esac
+    done
+  }
 
-  case "${cmd}" in
-    keygen ) __keygen "${call_args}" ;;
-    add ) __add "${call_args}" ;;
-    copy ) __copy "${call_args}" ;;
-    git-config ) __git_config "${call_args}" ;;
-    github ) __github "${call_args}" ;;
-    setup-mkays ) __setup_mkays "${call_args}" ;;
-    * ) err_unknown_cmd "${FUNCNAME[0]}" "${cmd}" ;;
-  esac
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  if [[ 1 == 0 ]] ; then
+    exit 1
+  fi
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  _call_cmd
 )
 
 main "$@"

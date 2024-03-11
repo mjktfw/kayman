@@ -12,6 +12,7 @@ GH_SCOPES="admin:public_key,admin:ssh_signing_key"
 ## KEY
 KEY_TYPE="ed25519"
 KEY_NAME="${HOSTNAME}"
+KEY_DIR="${HOME}/.ssh"
 
 ## PUBKEY
 PUBKEY_USERNAME="mjktfw"

@@ -32,6 +32,15 @@ function _err_empty_val2 () {
   _err_empty_val "${FUNCNAME[3]}" "$1"
 }
 
+function _err_no_default_raw () {
+  echo >&2 "$1: no default (and arg unspecified) for '$2'"
+  exit 1
+}
+
+function _err_no_default () {
+  _err_no_default_raw "${FUNCNAME[2]}" "$1"
+}
+
 function _err_opt_raw () {
   echo >&2 "$1: Unknown option: '$2'"
   exit 1
@@ -79,14 +88,12 @@ function _set_opt2 () {
 }
 
 function _default_opts () {
-
   declare optnms=($OPTNAMES)
-
-  [ ${#optnms[@]} -gt 0 ] && return 0
-  echo test
+  [ ${#optnms[@]} == 0 ] && return 0
   for optnm in ${optnms[@]} ; do
-    : ${OPTS[$optnm]:=${!optnm}}
+    : ${OPTS[$optnm]:=${!optnm:?$(_err_no_default $optnm)}}
   done
+  # printarr OPTS
 }
 
 function _call_cmd() {
@@ -103,6 +110,13 @@ function _call_cmd() {
     $cmds ) "$call_fun" "${ARGS[@]:1}" ;;
     * ) _err_cmd_undef "${ARGS[0]}" ;;
   esac
+}
+
+function printarr() {
+  declare -n __p="$1"
+  for k in "${!__p[@]}"; do
+    printf "%s=%s\n" "$k" "${__p[$k]}"
+  done
 }
 
 ################################################################################
@@ -134,30 +148,31 @@ function __add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  # local pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
+  local pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
 
-  # # TODO: assure it's public, not private
-  # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
+  # TODO: assure it's public, not private
+  cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
 
-  # (cd "${OPTS[PUBKEY_DIR]}" &&
-  #   git add --all . &&
-  #   git commit -m "${OPTS[KEY_NAME]}";
-  #   git push)
+  (cd "${OPTS[PUBKEY_DIR]}" &&
+    git add --all . &&
+    git commit -m "${OPTS[KEY_NAME]}";
+    git push)
 
-  # exit 0;
+  exit 0;
 )
 
 function __keygen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="KEY_NAME KEY_TYPE"
+  declare OPTNAMES="KEY_NAME KEY_TYPE KEY_DIR KEY_DEFAULT"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
         -k | --key-name ) _set_opt2 KEY_NAME ;;
         -t | --key-type ) _set_opt2 KEY_TYPE ;;
-        -d | --make-default ) _set_opt MAKE_DEFAULT ;;
+        -d | --key-dir ) _set_opt2 KEY_DIR ;;
+        -D | --key-default ) _set_opt KEY_DEFAULT ;;
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
@@ -173,15 +188,16 @@ function __keygen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  local key_priv_path="${HOME}/.ssh/${OPTS[KEY_NAME]}"
-  local key_id_path="${HOME}/.ssh/id_${OPTS[KEY_TYPE]}"
+  local key_priv_path="${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}"
+  local key_id_path="${OPTS[KEY_DIR]}/id_${OPTS[KEY_TYPE]}"
 
   # automatically creates dir, if non-existing
-  ssh-keygen -q -t "${OPTS[KEY_TYPE]}" \
+  ssh-keygen -q \
+    -t "${OPTS[KEY_TYPE]}" \
     -C "${OPTS[KEY_NAME]}" \
     -f "${key_priv_path}"
 
-  if (( ${OPTS[d]} == 1 )); then
+  if (( ${OPTS[D]} == 1 )); then
     ln -sf "${key_priv_path}" "${key_id_path}"
     ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
   fi

@@ -91,7 +91,7 @@ function _default_opts () {
   declare optnms=($OPTNAMES)
   [ ${#optnms[@]} == 0 ] && return 0
   for optnm in ${optnms[@]} ; do
-    : ${OPTS[$optnm]:=${!optnm:?$(_err_no_default $optnm)}}
+    : ${OPTS[$optnm]:=${!optnm:-""}}
   done
   # printarr OPTS
 }
@@ -123,7 +123,46 @@ function printarr() {
 # functions
 ################################################################################
 
-function __add() (
+function __key() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare CMDS="add|gen|create"
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  declare OPTNAMES="SINGLE DOUBLE"
+  function parse_opts() {
+    while [ "${#ARGS[@]}" -gt 0 ]; do
+      case "${ARGS[0]}" in
+        -s | --single ) _set_opt SINGLE ;;
+        -d | --double ) _set_opt2 DOUBLE ;;
+        -- ) break ;;
+        -* ) _err_opt ;;
+        * )  break ;;
+      esac
+    done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  if [[ 1 == 0 ]] ; then
+    exit 1
+  fi
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  _call_cmd
+)
+
+function __key_add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
@@ -161,7 +200,9 @@ function __add() (
   exit 0;
 )
 
-function __keygen() (
+function __key_gen() ( __key_create $@ )
+
+function __key_create() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
@@ -170,6 +211,8 @@ function __keygen() (
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
         -k | --key-name ) _set_opt2 KEY_NAME ;;
+        -c | --key-comment ) _set_opt2 KEY_COMMENT ;;
+        -f | --key-file )  _set_opt2 KEY_FILE ;;
         -t | --key-type ) _set_opt2 KEY_TYPE ;;
         -d | --key-dir ) _set_opt2 KEY_DIR ;;
         -D | --key-default ) _set_opt KEY_DEFAULT ;;
@@ -192,6 +235,7 @@ function __keygen() (
   local key_id_path="${OPTS[KEY_DIR]}/id_${OPTS[KEY_TYPE]}"
 
   # automatically creates dir, if non-existing
+
   ssh-keygen -q \
     -t "${OPTS[KEY_TYPE]}" \
     -C "${OPTS[KEY_NAME]}" \
@@ -491,7 +535,7 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare CMDS="keygen|add|copy|git|github|mkays"
+  declare CMDS="key|copy|git|github|mkays"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments

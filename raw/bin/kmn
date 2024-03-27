@@ -32,15 +32,6 @@ function _err_empty_val2 () {
   _err_empty_val "${FUNCNAME[3]}" "$1"
 }
 
-function _err_no_default_raw () {
-  echo >&2 "$1: no default (and arg unspecified) for '$2'"
-  exit 1
-}
-
-function _err_no_default () {
-  _err_no_default_raw "${FUNCNAME[2]}" "$1"
-}
-
 function _err_opt_raw () {
   echo >&2 "$1: Unknown option: '$2'"
   exit 1
@@ -88,85 +79,41 @@ function _set_opt2 () {
 }
 
 function _default_opts () {
-  declare optnms=($OPTNAMES)
-  [ ${#optnms[@]} == 0 ] && return 0
-  for optnm in ${optnms[@]} ; do
-    : ${OPTS[$optnm]:=${!optnm:-""}}
-  done
-  # printarr OPTS
+
+  OPTNAMES=($OPTNAMES)
+  if [[ ${#OPTNAMES[@]} -gt 0 ]] ; then
+    for optnm in ${OPTNAMES[@]} ; do
+      OPTS[$optnm]="${OPTS[$optnm]:-${!optnm}}"
+    done
+  fi
+
 }
 
 function _call_cmd() {
   _err_cmd_null
 
   if [[ "${FUNCNAME[1]}" == "main" ]] ; then
-    declare call_fun="__${ARGS[0]}"
+    local call_fun="__${ARGS[0]}"
   else
-    declare call_fun="${FUNCNAME[1]}_${ARGS[0]}"
+    local call_fun="${FUNCNAME[1]}_${ARGS[0]}"
   fi
 
-  declare cmds="@(${CMDS})"
+  local cmds="@(${cmds})"
   case "${ARGS[0]}" in
-    $cmds ) "$call_fun" "${ARGS[@]:1}" ;;
+    $cmds ) "${call_fun}" "${ARGS[@]:1}" ;;
     * ) _err_cmd_undef "${ARGS[0]}" ;;
   esac
-}
-
-function printarr() {
-  declare -n __p="$1"
-  for k in "${!__p[@]}"; do
-    printf "%s=%s\n" "$k" "${__p[$k]}"
-  done
 }
 
 ################################################################################
 # functions
 ################################################################################
 
-function __key() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented subcommands
-  declare CMDS="add|gen|create"
+function __add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="SINGLE DOUBLE"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
-        -s | --single ) _set_opt SINGLE ;;
-        -d | --double ) _set_opt2 DOUBLE ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac
-    done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  parse_opts; _default_opts
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-
-  if [[ 1 == 0 ]] ; then
-    exit 1
-  fi
-
-  #-----------------------------------------------------------------------------
-  # Call subcommand
-  _call_cmd
-)
-
-function __key_add() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  declare OPTNAMES="KEY_NAME PUBKEY_DIR"
+  OPTNAMES="KEY_NAME PUBKEY_DIR"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -187,35 +134,30 @@ function __key_add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  local pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
+  # local pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
 
-  # TODO: assure it's public, not private
-  cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
+  # # TODO: assure it's public, not private
+  # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
 
-  (cd "${OPTS[PUBKEY_DIR]}" &&
-    git add --all . &&
-    git commit -m "${OPTS[KEY_NAME]}";
-    git push)
+  # (cd "${OPTS[PUBKEY_DIR]}" &&
+  #   git add --all . &&
+  #   git commit -m "${OPTS[KEY_NAME]}";
+  #   git push)
 
-  exit 0;
+  # exit 0;
 )
 
-function __key_gen() ( __key_create $@ )
-
-function __key_create() (
+function __keygen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="KEY_NAME KEY_TYPE KEY_DIR KEY_DEFAULT"
+  OPTNAMES="KEY_NAME KEY_TYPE"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
         -k | --key-name ) _set_opt2 KEY_NAME ;;
-        -c | --key-comment ) _set_opt2 KEY_COMMENT ;;
-        -f | --key-file )  _set_opt2 KEY_FILE ;;
         -t | --key-type ) _set_opt2 KEY_TYPE ;;
-        -d | --key-dir ) _set_opt2 KEY_DIR ;;
-        -D | --key-default ) _set_opt KEY_DEFAULT ;;
+        -d | --make-default ) _set_opt MAKE_DEFAULT ;;
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
@@ -231,17 +173,15 @@ function __key_create() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  local key_priv_path="${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}"
-  local key_id_path="${OPTS[KEY_DIR]}/id_${OPTS[KEY_TYPE]}"
+  local key_priv_path="${HOME}/.ssh/${OPTS[KEY_NAME]}"
+  local key_id_path="${HOME}/.ssh/id_${OPTS[KEY_TYPE]}"
 
   # automatically creates dir, if non-existing
-
-  ssh-keygen -q \
-    -t "${OPTS[KEY_TYPE]}" \
+  ssh-keygen -q -t "${OPTS[KEY_TYPE]}" \
     -C "${OPTS[KEY_NAME]}" \
     -f "${key_priv_path}"
 
-  if (( ${OPTS[D]} == 1 )); then
+  if (( ${OPTS[d]} == 1 )); then
     ln -sf "${key_priv_path}" "${key_id_path}"
     ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
   fi
@@ -254,7 +194,7 @@ function __copy() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
+  OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -288,11 +228,11 @@ function __git() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare CMDS="config"
+  declare cmds="config"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES=""
+  OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -318,7 +258,7 @@ function __git_config() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="GIT_USERNAME GIT_EMAIL"
+  OPTNAMES="GIT_USERNAME GIT_EMAIL"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -356,11 +296,11 @@ function __github() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare CMDS="auth|ssh"
+  declare cmds="auth|ssh"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES=""
+  OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -389,7 +329,7 @@ function __github_auth() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="GH_SCOPES"
+  OPTNAMES="GH_SCOPES"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -429,7 +369,7 @@ function __github_ssh() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="KEY_NAME"
+  OPTNAMES="KEY_NAME"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -461,19 +401,17 @@ function __mkays() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare CMDS="setup"
+  declare cmds="setup"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES=""
+  OPTNAMES=""
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+      esac; done
   }
 
   #-----------------------------------------------------------------------------
@@ -494,7 +432,7 @@ function __mkays_setup() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
+  OPTNAMES="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -535,11 +473,11 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare CMDS="key|copy|git|github|mkays"
+  declare cmds="keygen|add|copy|git|github|mkays"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES=""
+  OPTNAMES=""
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in
@@ -565,11 +503,11 @@ function sample() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare CMDS="add|del|sum"
+  declare cmds="add|del|sum"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
-  declare OPTNAMES="SINGLE DOUBLE"
+  OPTNAMES="SINGLE DOUBLE"
   function parse_opts() {
     while [ "${#ARGS[@]}" -gt 0 ]; do
       case "${ARGS[0]}" in

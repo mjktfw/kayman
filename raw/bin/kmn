@@ -79,11 +79,11 @@ function _set_opt2 () {
 }
 
 function _default_opts () {
+  declare optnames=($OPTNAMES)
 
-  OPTNAMES=($OPTNAMES)
-  if [[ ${#OPTNAMES[@]} -gt 0 ]] ; then
-    for optnm in ${OPTNAMES[@]} ; do
-      OPTS[$optnm]="${OPTS[$optnm]:-${!optnm}}"
+  if [[ ${#optnames[@]} -gt 0 ]] ; then
+    for optnm in ${optnames[@]} ; do
+      : "${OPTS[$optnm]:=${!optnm:-""}}"
     done
   fi
 
@@ -109,21 +109,49 @@ function _call_cmd() {
 # functions
 ################################################################################
 
+function __test() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented arguments
+  OPTNAMES="OPT"
+
+  function parse_opts() {
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
+        -k | --key-name ) _set_opt2 OPT ;;
+        -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
+        -- ) break ;;
+        -* ) _err_opt ;;
+        * )  break ;;
+    esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  parse_opts; _default_opts
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  echo "${OPTS[OPT]}"
+  echo "OK"
+  exit 0
+)
+
 function __add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments
   OPTNAMES="KEY_NAME PUBKEY_DIR"
+
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -k | --key-name ) _set_opt2 KEY_NAME ;;
         -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+    esac done
   }
 
   #-----------------------------------------------------------------------------
@@ -153,16 +181,14 @@ function __keygen() (
   # (EDIT) Implemented arguments
   OPTNAMES="KEY_NAME KEY_TYPE"
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -k | --key-name ) _set_opt2 KEY_NAME ;;
         -t | --key-type ) _set_opt2 KEY_TYPE ;;
         -d | --make-default ) _set_opt MAKE_DEFAULT ;;
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+      esac done
   }
 
   #-----------------------------------------------------------------------------
@@ -196,16 +222,14 @@ function __copy() (
   # (EDIT) Implemented arguments
   OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -k | --key-name ) _set_opt2 KEY_NAME ;;
         -r | --pubkey-repo ) _set_opt2 PUBKEY_REPO ;;
         -u | --pubkey-user ) _set_opt2 PUBKEY_USER ;;
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+      esac done
   }
 
   #-----------------------------------------------------------------------------
@@ -234,13 +258,11 @@ function __git() (
   # (EDIT) Implemented arguments
   OPTNAMES=""
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+      esac done
   }
 
   #-----------------------------------------------------------------------------
@@ -260,15 +282,13 @@ function __git_config() (
   # (EDIT) Implemented arguments
   OPTNAMES="GIT_USERNAME GIT_EMAIL"
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -u | --git-username ) _set_opt2 GIT_USERNAME ;;
         -e | --git-email ) _set_opt2 GIT_EMAIL ;;
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+      esac done
   }
 
   #-----------------------------------------------------------------------------
@@ -302,13 +322,11 @@ function __github() (
   # (EDIT) Implemented arguments
   OPTNAMES=""
   function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
+    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
         -- ) break ;;
         -* ) _err_opt ;;
         * )  break ;;
-      esac
-    done
+      esac done
   }
 
   #-----------------------------------------------------------------------------
@@ -473,7 +491,7 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="keygen|add|copy|git|github|mkays"
+  declare cmds="keygen|add|copy|git|github|mkays|test"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented arguments

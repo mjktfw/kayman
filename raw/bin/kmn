@@ -132,49 +132,6 @@ function util::get_key_type() {
 # functions
 ################################################################################
 
-function add() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented subcommands
-  declare -r X_CMDS=""
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented options
-  declare -r X_OPTS="KEY_NAME PUBKEY_DIR"
-
-  function opt::parse_args() {
-    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
-
-        -k | --key-name ) opt::set2 KEY_NAME ;;
-        -d | --pubkey-dir ) opt::set2 PUBKEY_DIR ;;
-
-        -- ) break ;; -* ) err::opt ;; * )  break ;;
-      esac done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  opt::parse_args; opt::get_from_env
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-  # declare pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
-
-  # # TODO: assure it's public, not private
-  # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
-
-  # (cd "${OPTS[PUBKEY_DIR]}" &&
-  #   git add --all . &&
-  #   git commit -m "${OPTS[KEY_NAME]}";
-  #   git push)
-
-    #-----------------------------------------------------------------------------
-    # Call subcommand
-    opt::call_cmd
-)
-
 function key() (
 
   #-----------------------------------------------------------------------------
@@ -296,8 +253,47 @@ function key_default() (
   opt::call_cmd
 )
 
-function keygen() (
-  key gen "$@"
+function add() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="KEY_NAME PUBKEY_DIR"
+
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -k | --key-name ) opt::set2 KEY_NAME ;;
+        -d | --pubkey-dir ) opt::set2 PUBKEY_DIR ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  # declare pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
+
+  # # TODO: assure it's public, not private
+  # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
+
+  # (cd "${OPTS[PUBKEY_DIR]}" &&
+  #   git add --all . &&
+  #   git commit -m "${OPTS[KEY_NAME]}";
+  #   git push)
+
+    #-----------------------------------------------------------------------------
+    # Call subcommand
+    opt::call_cmd
 )
 
 function copy() (
@@ -587,6 +583,10 @@ function mkays_setup() (
   #-----------------------------------------------------------------------------
   # Call subcommand
   opt::call_cmd
+)
+
+function keygen() (
+  key gen "$@"
 )
 
 function main() (

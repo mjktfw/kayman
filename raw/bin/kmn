@@ -218,6 +218,37 @@ function key_gen() (
       esac done
   }
 
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_comment="$(basename "${key_priv_path}")"
+
+  # automatically creates dir, if non-existing
+  ssh-keygen -q \
+    -t "${OPTS[KEY_TYPE]}" \
+    -C "${key_comment}" \
+    -f "${key_priv_path}"
+
+  if (( ${OPTS[KEY_MAKE_DEFAULT]} == 1 )); then
+    declare key_id_path="$(dirname "${key_priv_path}")/id_${OPTS[KEY_TYPE]}"
+    ln -sf "${key_priv_path}" "${key_id_path}"
+    ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
+  fi
+  # TODO: better create key in the working directory and add another command to make it default
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
 function keygen() (
   key gen "$@"
 )

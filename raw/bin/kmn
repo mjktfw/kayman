@@ -17,91 +17,106 @@ shopt -s extglob
 ################################################################################
 # environment
 ################################################################################
-# APP_DIR="${KMN_DIR}"
-# APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
+APP_DIR="${KMN_DIR}"
+ENV_LOAD=true
 
 ################################################################################
-# global variable
+# helper functions
 ################################################################################
-function _err_empty_val () {
+
+function env::load () {
+  if [[ "${ENV_LOAD}" == true ]]; then
+    APP_DIR="${APP_DIR}" . "${APP_DIR}/app/env"
+  fi
+}
+
+function err::empty_val () {
   echo >&2 "$1: a value is needed for '$2'"
   exit 1
 }
 
-function _err_empty_val2 () {
-  _err_empty_val "${FUNCNAME[3]}" "$1"
+function err::empty_val2 () {
+  err::empty_val "${FUNCNAME[3]}" "$1"
 }
 
-function _err_opt_raw () {
+function err::opt_raw () {
   echo >&2 "$1: Unknown option: '$2'"
   exit 1
 }
 
-function _err_opt () {
-  _err_opt_raw "${FUNCNAME[2]}" "${ARGS[0]}"
+function err::opt () {
+  err::opt_raw "${FUNCNAME[2]}" "${ARGS[0]}"
 }
 
-function _err_cmd_null_raw() {
+function err::cmd_null_raw() {
   echo >&2 "$1: Missing command"
   exit 1
 }
 
-function _err_cmd_null() {
+function err::cmd_null() {
   if [[ "${#ARGS[@]}" == 0 ]] ; then
-    _err_cmd_null_raw "${FUNCNAME[2]}"
+    err::cmd_null_raw "${FUNCNAME[2]}"
   fi
 }
 
-function _err_cmd_undef_raw () {
+function err::cmd_undef_raw () {
   echo >&2 "$1: Undefined command: '$2'"
   exit 1
 }
 
-function _err_cmd_undef () {
-  _err_cmd_undef_raw "${FUNCNAME[2]}" "$1"
+function err::cmd_undef () {
+  err::cmd_undef_raw "${FUNCNAME[2]}" "$1"
 }
 
-function _set_opt () {
-  local opt_name=$1
-  local opt_string="${ARGS[0]}"
+function opt::set () {
+  declare opt_name="$1"
+  declare opt_string="${ARGS[0]}"
 
   OPTS[$opt_name]="1"
   ARGS=("${ARGS[@]:1}")
 }
 
-function _set_opt2 () {
-  local opt_name=$1
-  local opt_string="${ARGS[0]}"
-  local opt_val="${ARGS[1]:?$(_err_empty_val2 $opt_string)}"
+function opt::set2 () {
+  declare opt_name="$1"
+  declare opt_string="${ARGS[0]}"
+  declare opt_val="${ARGS[1]:?$(err::empty_val2 $opt_string)}"
 
-  OPTS[$opt_name]="${opt_val}"
+  OPTS["${opt_name}"]="${opt_val}"
   ARGS=("${ARGS[@]:2}")
 }
 
-function _default_opts () {
-  declare optnames=($OPTNAMES)
+function opt::get_from_env () {
+  declare optnames=($X_OPTS)
 
   if [[ ${#optnames[@]} -gt 0 ]] ; then
-    for optnm in ${optnames[@]} ; do
-      : "${OPTS[$optnm]:=${!optnm:-""}}"
+    for optname in ${optnames[@]} ; do
+      : "${OPTS["${optname}"]:="${!optname:-""}"}"
     done
   fi
 
 }
 
-function _call_cmd() {
-  _err_cmd_null
+function opt::call_cmd() {
 
-  if [[ "${FUNCNAME[1]}" == "main" ]] ; then
-    local call_fun="__${ARGS[0]}"
-  else
-    local call_fun="${FUNCNAME[1]}_${ARGS[0]}"
+  if [[ "${#X_CMDS}" == 0 ]] ; then
+    #TODO: return error if any subcommand is supplied
+    return 0
   fi
 
-  local cmds="@(${cmds})"
+  err::cmd_null
+
+  if [[ "${FUNCNAME[1]}" == "main" ]] ; then
+    declare call_fun="${ARGS[0]}"
+  else
+    declare call_fun="${FUNCNAME[1]}_${ARGS[0]}"
+  fi
+
+  declare cmds="$(echo $X_CMDS | tr -s [:blank:] '|')"
+  declare cmds="@(${cmds})"
+
   case "${ARGS[0]}" in
     $cmds ) "${call_fun}" "${ARGS[@]:1}" ;;
-    * ) _err_cmd_undef "${ARGS[0]}" ;;
+    * ) err::cmd_undef "${ARGS[0]}" ;;
   esac
 }
 
@@ -109,60 +124,35 @@ function _call_cmd() {
 # functions
 ################################################################################
 
-function __test() (
+function add() (
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="OPT"
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
 
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -k | --key-name ) _set_opt2 OPT ;;
-        -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-    esac done
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="KEY_NAME PUBKEY_DIR"
+
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -k | --key-name ) opt::set2 KEY_NAME ;;
+        -d | --pubkey-dir ) opt::set2 PUBKEY_DIR ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  echo "${OPTS[OPT]}"
-  echo "OK"
-  exit 0
-)
-
-function __add() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME PUBKEY_DIR"
-
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -k | --key-name ) _set_opt2 KEY_NAME ;;
-        -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-    esac done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  parse_opts; _default_opts
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-  # local pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
+  # declare pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
 
   # # TODO: assure it's public, not private
   # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
@@ -172,22 +162,28 @@ function __add() (
   #   git commit -m "${OPTS[KEY_NAME]}";
   #   git push)
 
-  # exit 0;
+    #-----------------------------------------------------------------------------
+    # Call subcommand
+    opt::call_cmd
 )
 
-function __keygen() (
+function keygen() (
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME KEY_TYPE"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -k | --key-name ) _set_opt2 KEY_NAME ;;
-        -t | --key-type ) _set_opt2 KEY_TYPE ;;
-        -d | --make-default ) _set_opt MAKE_DEFAULT ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="KEY_NAME KEY_TYPE"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -k | --key-name ) opt::set2 KEY_NAME ;;
+        -t | --key-type ) opt::set2 KEY_TYPE ;;
+        -d | --make-default ) opt::set MAKE_DEFAULT ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
   }
 
@@ -195,73 +191,46 @@ function __keygen() (
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  local key_priv_path="${HOME}/.ssh/${OPTS[KEY_NAME]}"
-  local key_id_path="${HOME}/.ssh/id_${OPTS[KEY_TYPE]}"
+  declare key_priv_path="${HOME}/.ssh/${OPTS[KEY_NAME]}"
+  declare key_id_path="${HOME}/.ssh/id_${OPTS[KEY_TYPE]}"
 
   # automatically creates dir, if non-existing
   ssh-keygen -q -t "${OPTS[KEY_TYPE]}" \
     -C "${OPTS[KEY_NAME]}" \
     -f "${key_priv_path}"
 
-  if (( ${OPTS[d]} == 1 )); then
+  if (( ${OPTS[MAKE_DEFAULT]} == 1 )); then
     ln -sf "${key_priv_path}" "${key_id_path}"
     ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
   fi
   # TODO: better create key in the working directory and add another command to make it default
 
-  exit 0;
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
 )
 
-function __copy() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME PUBKEY_REPO PUBKEY_USER"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -k | --key-name ) _set_opt2 KEY_NAME ;;
-        -r | --pubkey-repo ) _set_opt2 PUBKEY_REPO ;;
-        -u | --pubkey-user ) _set_opt2 PUBKEY_USER ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  parse_opts; _default_opts
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-  local gh_baseurl="https://raw.githubusercontent.com/${OPTS[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
-  local gh_key_url="${gh_baseurl}/pub/${OPTS[KEY_NAME]}.pub"
-
-  curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
-
-  exit 0;
-)
-
-function __git() (
+function copy() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="config"
+  declare -r X_CMDS=""
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES=""
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
+  # (EDIT) Implemented options
+  declare -r X_OPTS="KEY_NAME PUBKEY_REPO PUBKEY_USER"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -k | --key-name ) opt::set2 KEY_NAME ;;
+        -r | --pubkey-repo ) opt::set2 PUBKEY_REPO ;;
+        -u | --pubkey-user ) opt::set2 PUBKEY_USER ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
   }
 
@@ -269,25 +238,32 @@ function __git() (
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  declare gh_baseurl="https://raw.githubusercontent.com/${OPTS[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
+  declare gh_key_url="${gh_baseurl}/pub/${OPTS[KEY_NAME]}.pub"
+
+  curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
 
   #-----------------------------------------------------------------------------
   # Call subcommand
-  _call_cmd
+  opt::call_cmd
 )
 
-function __git_config() (
+function git() (
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="GIT_USERNAME GIT_EMAIL"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -u | --git-username ) _set_opt2 GIT_USERNAME ;;
-        -e | --git-email ) _set_opt2 GIT_EMAIL ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS="config"
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS=""
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
   }
 
@@ -295,7 +271,37 @@ function __git_config() (
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
+function git_config() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="GIT_USERNAME GIT_EMAIL"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -u | --git-username ) opt::set2 GIT_USERNAME ;;
+        -e | --git-email ) opt::set2 GIT_EMAIL ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
@@ -309,23 +315,23 @@ function __git_config() (
   git config --global user.email "${OPTS[GIT_EMAIL]}"
   git config --global user.name "${OPTS[GIT_USERNAME]}"
 
-  exit 0;
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
 )
 
-function __github() (
+function github() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="auth|ssh"
+  declare -r X_CMDS="auth ssh"
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES=""
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
+  # (EDIT) Implemented options
+  declare -r X_OPTS=""
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
   }
 
@@ -333,37 +339,39 @@ function __github() (
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
   #-----------------------------------------------------------------------------
   # Call subcommand
-  _call_cmd
+  opt::call_cmd
 )
 
-function __github_auth() (
+function github_auth() (
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="GH_SCOPES"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
-        -s | --gh-scopes ) _set_opt2 GH_SCOPES ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac
-    done
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="GH_SCOPES"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -s | --gh-scopes ) opt::set2 GH_SCOPES ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
@@ -380,30 +388,34 @@ function __github_auth() (
 
   gh config set --host github.com prompt disabled
 
-  exit 0;
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
 )
 
-function __github_ssh() (
+function github_ssh() (
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="KEY_NAME"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
-        -k | --key-name ) _set_opt2 KEY_NAME ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac
-    done
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="KEY_NAME"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -k | --key-name ) opt::set2 KEY_NAME ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
@@ -412,70 +424,72 @@ function __github_ssh() (
   gh ssh-key add "${pubkey_path}" --type authentication
   gh config set --host github.com git_protocol ssh
 
-  exit 0
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
 )
 
-function __mkays() (
+function mkays() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="setup"
+  declare -r X_CMDS="setup"
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES=""
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do case "${ARGS[0]}" in
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac; done
+  # (EDIT) Implemented options
+  declare -r X_OPTS=""
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
   #-----------------------------------------------------------------------------
   # Call subcommand
-  _call_cmd
+  opt::call_cmd
 )
 
-function __mkays_setup() (
+function mkays_setup() (
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
-        -u | --pubkey-username ) _set_opt2 PUBKEY_USERNAME;;
-        -r | --pubkey-repo ) _set_opt2 PUBKEY_REPO ;;
-        -d | --pubkey-dir ) _set_opt2 PUBKEY_DIR ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac
-    done
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -u | --pubkey-username ) opt::set2 PUBKEY_USERNAME;;
+        -r | --pubkey-repo ) opt::set2 PUBKEY_REPO ;;
+        -d | --pubkey-dir ) opt::set2 PUBKEY_DIR ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
   repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
   repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
 
-  [ ! -d "${OPTS[PUBKEY_DIR]}/.git" ] &&
+  [[ ! -d "${OPTS[PUBKEY_DIR]}/.git" ]] &&
     git clone "${repo_ssl}" "${OPTS[PUBKEY_DIR]}"
 
   (cd "${OPTS[PUBKEY_DIR]}" &&
@@ -484,77 +498,79 @@ function __mkays_setup() (
   (cd "${OPTS[PUBKEY_DIR]}" &&
     git remote set-url --push origin "${repo_ssh}")
 
-  exit 0
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
 )
 
 function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="keygen|add|copy|git|github|mkays|test"
+  declare -r X_CMDS="sample keygen add copy git github mkays"
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES=""
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac
-    done
+  # (EDIT) Implemented options
+  declare -r X_OPTS=""
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
 
   #-----------------------------------------------------------------------------
   # Call subcommand
-  _call_cmd
+  opt::call_cmd
 )
 
 function sample() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare cmds="add|del|sum"
+  declare -r X_CMDS=""
 
   #-----------------------------------------------------------------------------
-  # (EDIT) Implemented arguments
-  OPTNAMES="SINGLE DOUBLE"
-  function parse_opts() {
-    while [ "${#ARGS[@]}" -gt 0 ]; do
-      case "${ARGS[0]}" in
-        -s | --single ) _set_opt SINGLE ;;
-        -d | --double ) _set_opt2 DOUBLE ;;
-        -V | --version ) echo "Version: xD" ; exit 0 ;;
-        -- ) break ;;
-        -* ) _err_opt ;;
-        * )  break ;;
-      esac
-    done
+  # (EDIT) Implemented options
+  declare -r X_OPTS="SINGLE DOUBLE XPECIAL"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -s | --single ) opt::set SINGLE ;;
+        -d | --double ) opt::set2 DOUBLE ;;
+        -x | --xpecial ) echo "Special: xD" ; exit 0 ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
   }
 
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
   declare -A OPTS
-  parse_opts; _default_opts
+  opt::parse_args; opt::get_from_env
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-
-  if [[ 1 == 0 ]] ; then
-    exit 1
-  fi
+  echo "OPTS[SINGLE]: ${OPTS[SINGLE]}"
+  echo "OPTS[DOUBLE]: ${OPTS[DOUBLE]}"
 
   #-----------------------------------------------------------------------------
   # Call subcommand
-  _call_cmd
+  opt::call_cmd
 )
 
+################################################################################
+# RUN
+################################################################################
+
+env::load
 main "$@"

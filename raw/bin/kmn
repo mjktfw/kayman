@@ -197,11 +197,13 @@ function keygen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
+
   declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-  declare key_comment="${OPTS[KEY_NAME]:-$(basename "${OPTS[KEY_FILE]}")}"
+  declare key_comment="$(basename "${key_priv_path}")"
 
   # automatically creates dir, if non-existing
-  ssh-keygen -q -t "${OPTS[KEY_TYPE]}" \
+  ssh-keygen -q \
+    -t "${OPTS[KEY_TYPE]}" \
     -C "${key_comment}" \
     -f "${key_priv_path}"
 

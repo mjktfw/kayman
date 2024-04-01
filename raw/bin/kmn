@@ -212,7 +212,7 @@ function key_gen() (
         -k | --key-name ) opt::set2 KEY_NAME ;;
         -t | --key-type ) opt::set2 KEY_TYPE ;;
         -d | --key-dir ) opt::set2 KEY_DIR ;;
-        -d | --make-default ) opt::set KEY_MAKE_DEFAULT ;;
+        --make-default ) opt::set KEY_MAKE_DEFAULT ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done

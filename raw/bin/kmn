@@ -120,6 +120,14 @@ function opt::call_cmd() {
   esac
 }
 
+function util::get_key_type() {
+  declare key_path="$1"
+  declare key_pub="$(ssh-keygen -f "${key_path}" -y)"
+  declare key_type="$(echo "${key_pub}" | cut -d' ' -f1 | sed -e "s/^ssh-//")"
+
+  echo "${key_type}"
+}
+
 ################################################################################
 # functions
 ################################################################################
@@ -240,7 +248,6 @@ function key_gen() (
   if (( "${OPTS[KEY_MAKE_DEFAULT]:-0}" == 1 )); then
     key default -f "${key_priv_path}"
   fi
-  # TODO: better create key in the working directory and add another command to make it default
 
   #-----------------------------------------------------------------------------
   # Call subcommand
@@ -278,8 +285,7 @@ function key_default() (
   # (EDIT) body
 
   declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-
-  declare key_type=$(cut -d' ' -f1 < "${key_priv_path}.pub" | sed -e "s/^ssh-//")
+  declare key_type="$(util::get_key_type "${key_priv_path}")"
   declare key_id_path="$(dirname "${key_priv_path}")/id_${key_type}"
 
   ln -sf "${key_priv_path}" "${key_id_path}"

@@ -238,9 +238,7 @@ function key_gen() (
     -f "${key_priv_path}"
 
   if (( "${OPTS[KEY_MAKE_DEFAULT]:-0}" == 1 )); then
-    declare key_id_path="$(dirname "${key_priv_path}")/id_${OPTS[KEY_TYPE]}"
-    ln -sf "${key_priv_path}" "${key_id_path}"
-    ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
+    key default -f "${key_priv_path}"
   fi
   # TODO: better create key in the working directory and add another command to make it default
 
@@ -589,7 +587,7 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="sample key keygen add copy git github mkays"
+  declare -r X_CMDS="example key keygen add copy git github mkays"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
@@ -614,7 +612,7 @@ function main() (
   opt::call_cmd
 )
 
-function sample() (
+function example() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands

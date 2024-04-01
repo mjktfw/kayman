@@ -167,7 +167,36 @@ function add() (
     opt::call_cmd
 )
 
-function keygen() (
+function key() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS="gen"
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS=""
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
+function key_gen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -189,34 +218,8 @@ function keygen() (
       esac done
   }
 
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  opt::parse_args; opt::get_from_env
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-
-  declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-  declare key_comment="$(basename "${key_priv_path}")"
-
-  # automatically creates dir, if non-existing
-  ssh-keygen -q \
-    -t "${OPTS[KEY_TYPE]}" \
-    -C "${key_comment}" \
-    -f "${key_priv_path}"
-
-  if (( ${OPTS[KEY_MAKE_DEFAULT]} == 1 )); then
-    declare key_id_path="$(dirname "${key_priv_path}")/id_${OPTS[KEY_TYPE]}"
-    ln -sf "${key_priv_path}" "${key_id_path}"
-    ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
-  fi
-  # TODO: better create key in the working directory and add another command to make it default
-
-  #-----------------------------------------------------------------------------
-  # Call subcommand
-  opt::call_cmd
+function keygen() (
+  key gen "$@"
 )
 
 function copy() (
@@ -512,7 +515,7 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="sample keygen add copy git github mkays"
+  declare -r X_CMDS="sample key keygen add copy git github mkays"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options

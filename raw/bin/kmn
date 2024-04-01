@@ -179,8 +179,10 @@ function keygen() (
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
+        -f | --key-file ) opt::set2 KEY_FILE ;;
         -k | --key-name ) opt::set2 KEY_NAME ;;
         -t | --key-type ) opt::set2 KEY_TYPE ;;
+        -d | --key-dir ) opt::set2 KEY_DIR ;;
         -d | --make-default ) opt::set MAKE_DEFAULT ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
@@ -195,15 +197,16 @@ function keygen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  declare key_priv_path="${HOME}/.ssh/${OPTS[KEY_NAME]}"
-  declare key_id_path="${HOME}/.ssh/id_${OPTS[KEY_TYPE]}"
+  declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_comment="${OPTS[KEY_NAME]:-$(basename "${OPTS[KEY_FILE]}")}"
 
   # automatically creates dir, if non-existing
   ssh-keygen -q -t "${OPTS[KEY_TYPE]}" \
-    -C "${OPTS[KEY_NAME]}" \
+    -C "${key_comment}" \
     -f "${key_priv_path}"
 
   if (( ${OPTS[MAKE_DEFAULT]} == 1 )); then
+    declare key_id_path="$(dirname "${key_priv_path}")/id_${OPTS[KEY_TYPE]}"
     ln -sf "${key_priv_path}" "${key_id_path}"
     ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
   fi

@@ -171,7 +171,7 @@ function key() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="gen"
+  declare -r X_CMDS="gen default"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options

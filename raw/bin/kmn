@@ -128,6 +128,14 @@ function util::get_key_type() {
   echo "${key_type}"
 }
 
+function util::get_key_comment() {
+  declare key_path="$1"
+  declare key_pub="$(ssh-keygen -f "${key_path}" -y)"
+  declare key_comment="$(echo "${key_pub}" | cut -d' ' -f3)"
+
+  echo "${key_comment}"
+}
+
 ################################################################################
 # functions
 ################################################################################
@@ -136,7 +144,7 @@ function key() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="gen default"
+  declare -r X_CMDS="gen default add"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
@@ -193,17 +201,17 @@ function key_gen() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
-  declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-  declare key_comment="$(basename "${key_priv_path}")"
+  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_comment="$(basename "${key_path}")"
 
   # automatically creates dir, if non-existing
   ssh-keygen -q \
     -t "${OPTS[KEY_TYPE]}" \
     -C "${key_comment}" \
-    -f "${key_priv_path}"
+    -f "${key_path}"
 
   if (( "${OPTS[KEY_MAKE_DEFAULT]:-0}" == 1 )); then
-    key default -f "${key_priv_path}"
+    key default -f "${key_path}"
   fi
 
   #-----------------------------------------------------------------------------
@@ -241,19 +249,19 @@ function key_default() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
-  declare key_priv_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-  declare key_type="$(util::get_key_type "${key_priv_path}")"
-  declare key_id_path="$(dirname "${key_priv_path}")/id_${key_type}"
+  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_type="$(util::get_key_type "${key_path}")"
+  declare key_id_path="$(dirname "${key_path}")/id_${key_type}"
 
-  ln -sf "${key_priv_path}" "${key_id_path}"
-  ln -sf "${key_priv_path}.pub" "${key_id_path}.pub"
+  ln -sf "${key_path}" "${key_id_path}"
+  ln -sf "${key_path}.pub" "${key_id_path}.pub"
 
   #-----------------------------------------------------------------------------
   # Call subcommand
   opt::call_cmd
 )
 
-function add() (
+function key_add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -261,13 +269,15 @@ function add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
-  declare -r X_OPTS="KEY_NAME PUBKEY_DIR"
+  declare -r X_OPTS="KEY_FILE KEY_NAME KEY_DIR PUBKEY_REPO_DIR"
 
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
+        -f | --key-file ) opt::set2 KEY_FILE ;;
         -k | --key-name ) opt::set2 KEY_NAME ;;
-        -d | --pubkey-dir ) opt::set2 PUBKEY_DIR ;;
+        -d | --key-dir ) opt::set2 KEY_DIR ;;
+        -r | --repo-dir ) opt::set2 PUBKEY_REPO_DIR ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
@@ -281,19 +291,20 @@ function add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  # declare pubkey_path="${HOME}/.ssh/${OPTS[KEY_NAME]}.pub"
+  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare pubkey_path="${keypath}.pub"
 
-  # # TODO: assure it's public, not private
-  # cp "${pubkey_path}" "${OPTS[PUBKEY_DIR]}/pub/"
+  # TODO: assure it's public, not private
+  cp "${pubkey_path}" "${OPTS[PUBKEY_REPO_DIR]}/pub/"
 
-  # (cd "${OPTS[PUBKEY_DIR]}" &&
-  #   git add --all . &&
-  #   git commit -m "${OPTS[KEY_NAME]}";
-  #   git push)
+  # TODO: use comment instead of filename
+  repo sync \
+    -d "${PUBKEY_REPO_DIR}" \
+    -m "$(basename ${key_path})"
 
-    #-----------------------------------------------------------------------------
-    # Call subcommand
-    opt::call_cmd
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
 )
 
 function copy() (
@@ -328,6 +339,118 @@ function copy() (
   declare gh_key_url="${gh_baseurl}/pub/${OPTS[KEY_NAME]}.pub"
 
   curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
+function repo() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS="setup sync"
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS=""
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
+function repo_setup() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_REPO_DIR"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -u | --pubkey-username ) opt::set2 PUBKEY_USERNAME;;
+        -r | --pubkey-repo ) opt::set2 PUBKEY_REPO ;;
+        -d | --pubkey-dir ) opt::set2 PUBKEY_REPO_DIR ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
+  repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
+
+  [[ ! -d "${OPTS[PUBKEY_REPO_DIR]}/.git" ]] &&
+    git clone "${repo_ssl}" "${OPTS[PUBKEY_REPO_DIR]}"
+
+  (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
+    git pull)
+
+  (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
+    git remote set-url --push origin "${repo_ssh}")
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
+function repo_sync() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="PUBKEY_REPO_DIR PUBKEY_REPO_MESSAGE"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -r | --repo-dir ) opt::set2 PUBKEY_REPO_DIR ;;
+        -m | --message ) opt::set2 PUBKEY_REPO_MESSAGE ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+  (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
+    git add --all . &&
+    git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}";
+    git push)
+
 
   #-----------------------------------------------------------------------------
   # Call subcommand
@@ -511,80 +634,6 @@ function github_ssh() (
   opt::call_cmd
 )
 
-function mkays() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented subcommands
-  declare -r X_CMDS="setup"
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented options
-  declare -r X_OPTS=""
-  function opt::parse_args() {
-    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
-        -- ) break ;; -* ) err::opt ;; * )  break ;;
-      esac done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  opt::parse_args; opt::get_from_env
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-
-  #-----------------------------------------------------------------------------
-  # Call subcommand
-  opt::call_cmd
-)
-
-function mkays_setup() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented subcommands
-  declare -r X_CMDS=""
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented options
-  declare -r X_OPTS="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_DIR"
-  function opt::parse_args() {
-    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
-
-        -u | --pubkey-username ) opt::set2 PUBKEY_USERNAME;;
-        -r | --pubkey-repo ) opt::set2 PUBKEY_REPO ;;
-        -d | --pubkey-dir ) opt::set2 PUBKEY_DIR ;;
-
-        -- ) break ;; -* ) err::opt ;; * )  break ;;
-      esac done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  opt::parse_args; opt::get_from_env
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-  repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
-  repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
-
-  [[ ! -d "${OPTS[PUBKEY_DIR]}/.git" ]] &&
-    git clone "${repo_ssl}" "${OPTS[PUBKEY_DIR]}"
-
-  (cd "${OPTS[PUBKEY_DIR]}" &&
-    git pull)
-
-  (cd "${OPTS[PUBKEY_DIR]}" &&
-    git remote set-url --push origin "${repo_ssh}")
-
-  #-----------------------------------------------------------------------------
-  # Call subcommand
-  opt::call_cmd
-)
-
 function keygen() (
   key gen "$@"
 )
@@ -593,7 +642,7 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="example key keygen add copy git github mkays"
+  declare -r X_CMDS="example key keygen copy git github repo"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options

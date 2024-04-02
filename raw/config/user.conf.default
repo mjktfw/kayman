@@ -18,4 +18,4 @@ KEY_MAKE_DEFAULT=0
 ## PUBKEY
 PUBKEY_USERNAME="mjktfw"
 PUBKEY_REPO="mkays"
-PUBKEY_DIR="${HOME}/lair/mkays"
+PUBKEY_REPO_DIR="${HOME}/lair/mkays"

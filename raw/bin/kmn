@@ -719,6 +719,7 @@ function example() (
 
 echo "PWD: $PWD"
 a="$(util::is_git_repo $PWD)"
+echo $a
 # if [ $(util::is_git_repo "$PWD") ]; then
 #   echo ok
 # else

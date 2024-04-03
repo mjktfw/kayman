@@ -138,6 +138,7 @@ function util::get_key_comment() {
 
 function util::is_git_repo() {
  declare dir="$1"
+ declare is_git
   (
     cd "${dir}"
     is_git="$(git rev-parse --is-inside-work-tree 2> /dev/null)"

@@ -721,4 +721,8 @@ function example() (
 # main "$@"
 
 echo "PWD: $PWD"
-util::is_git_repo $PWD
+if [ util::is_git_repo ]; then
+  echo ok
+else
+  echo not
+fi

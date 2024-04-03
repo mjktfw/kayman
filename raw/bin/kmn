@@ -720,8 +720,9 @@ function example() (
 # main "$@"
 
 echo "PWD: $PWD"
-if [ $(util::is_git_repo "$PWD") ]; then
-  echo ok
-else
-  echo not
-fi
+util::is_git_repo $PWD
+# if [ $(util::is_git_repo "$PWD") ]; then
+#   echo ok
+# else
+#   echo not
+# fi

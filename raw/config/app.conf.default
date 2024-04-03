@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 APP_NAME="kayman"
 APP_PREFIX="kmn"

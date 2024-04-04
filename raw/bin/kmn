@@ -712,7 +712,6 @@ function example() (
 
 function util::is_git_repo() {
   declare dir="$1"
-  declare is_git
   echo $(which git)
   git rev-parse --is-inside-work-tree
   # is_git="$(cd "${dir}"; git rev-parse --is-inside-work-tree 2> /dev/null)"
@@ -720,4 +719,5 @@ function util::is_git_repo() {
 }
 
 echo "PWD: $PWD"
-util::is_git_repo $PWD
+# util::is_git_repo $PWD
+git rev-parse --is-inside-work-tree

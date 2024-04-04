@@ -68,6 +68,11 @@ function err::cmd_undef () {
   err::cmd_undef_raw "${FUNCNAME[2]}" "$1"
 }
 
+function err::no_repo () {
+  echo >&2 "Repo not existing, can't sync: '$1'"
+  exit 1
+}
+
 function opt::set () {
   declare opt_name="$1"
   declare opt_string="${ARGS[0]}"
@@ -455,11 +460,14 @@ function repo_sync() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
+  if ! util::is_git_repo "${OPTS[PUBKEY_REPO_DIR]}" ; then
+    err::no_repo "${OPTS[PUBKEY_REPO_DIR]}"
+  fi
+
   (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
     git add --all . &&
     git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}";
     git push)
-
 
   #-----------------------------------------------------------------------------
   # Call subcommand

@@ -720,4 +720,4 @@ function util::is_git_repo() {
 }
 
 echo "PWD: $PWD"
-util::is_git_repo ~/lair
+util::is_git_repo ~/lair/kayman

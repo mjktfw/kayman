@@ -457,7 +457,7 @@ function repo_sync() (
   opt::call_cmd
 )
 
-function gitcli) (
+function gitcli() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands

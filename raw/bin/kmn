@@ -716,7 +716,7 @@ function util::is_git_repo() {
   is_git="$(cd "${dir}" \
     && git rev-parse --is-inside-work-tree 2> /dev/null \
     || echo false)"
-  echo "${is_git:-false}"
+  echo "${is_git}"
 }
 
 echo "PWD: $PWD"

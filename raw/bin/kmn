@@ -8,7 +8,7 @@
 set -T # inherit DEBUG and RETURN trap for functions
 set -C # prevent file overwrite by > &> <>
 set -E # inherit -e
-set -e # exit immediately on errors
+# set -e # exit immediately on errors
 set -u # exit on not assigned variables
 set -o pipefail # exit on pipe failure
 
@@ -134,13 +134,6 @@ function util::get_key_comment() {
   declare key_comment="$(echo "${key_pub}" | cut -d' ' -f3)"
 
   echo "${key_comment}"
-}
-
-function util::is_git_repo() {
-  declare dir="$1"
-  declare is_git
-  is_git="$(cd "${dir}" && echo "DIR: ${PWD}" && git rev-parse --is-inside-work-tree 2> /dev/null)"
-  echo "${is_git:-false}"
 }
 
 ################################################################################
@@ -717,11 +710,13 @@ function example() (
 # env::load
 # main "$@"
 
+function util::is_git_repo() {
+  declare dir="$1"
+  declare is_git
+  is_git="$(cd "${dir}" && echo "DIR: ${PWD}" && git rev-parse --is-inside-work-tree 2> /dev/null)"
+  echo "${is_git:-false}"
+}
+
 echo "PWD: $PWD"
 util::is_git_repo $PWD
 echo $a
-# if [ $(util::is_git_repo "$PWD") ]; then
-#   echo ok
-# else
-#   echo not
-# fi

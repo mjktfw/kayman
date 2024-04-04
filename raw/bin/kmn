@@ -719,4 +719,3 @@ function util::is_git_repo() {
 
 echo "PWD: $PWD"
 util::is_git_repo $PWD
-echo $a

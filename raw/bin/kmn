@@ -318,7 +318,7 @@ function lib::key_add() (
 
   # TODO: use comment instead of filename
   lib::repo sync \
-    -d "${PUBKEY_REPO_DIR}" \
+    -r "${PUBKEY_REPO_DIR}" \
     -m "$(basename ${key_path})"
 
   #-----------------------------------------------------------------------------

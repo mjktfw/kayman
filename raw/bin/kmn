@@ -111,9 +111,9 @@ function opt::call_cmd() {
   err::cmd_null
 
   if [[ "${FUNCNAME[1]}" == "main" ]] ; then
-    declare call_fun="main::${ARGS[0]}"
+    declare call_fun="lib::${ARGS[0]}"
   else
-    declare call_fun="main::${FUNCNAME[1]}_${ARGS[0]}"
+    declare call_fun="lib::${FUNCNAME[1]}_${ARGS[0]}"
   fi
 
   declare cmds="$(echo $X_CMDS | tr -s [:blank:] '|')"

@@ -396,7 +396,7 @@ function lib::repo_setup() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
-  declare -r X_OPTS="PUBKEY_USERNAME PUBKEY_RPEO PUBKEY_REPO_DIR"
+  declare -r X_OPTS="PUBKEY_USERNAME PUBKEY_REPO PUBKEY_REPO_DIR"
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
@@ -419,7 +419,7 @@ function lib::repo_setup() (
   repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
   repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
 
-  [[ ! -d "${OPTS[PUBKEY_REPO_DIR]}/.git" ]] &&
+  util::is_git_repo "${OPTS[PUBKEY_REPO_DIR]}" ||
     git clone "${repo_ssl}" "${OPTS[PUBKEY_REPO_DIR]}"
 
   (cd "${OPTS[PUBKEY_REPO_DIR]}" &&

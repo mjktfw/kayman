@@ -317,7 +317,7 @@ function lib::key_add() (
   cp "${pubkey_path}" "${OPTS[PUBKEY_REPO_DIR]}/pub/"
 
   # TODO: use comment instead of filename
-  repo sync \
+  lib::repo sync \
     -d "${PUBKEY_REPO_DIR}" \
     -m "$(basename ${key_path})"
 

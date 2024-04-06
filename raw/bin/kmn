@@ -144,9 +144,14 @@ function util::get_key_comment() {
 function util::is_git_repo() {
   declare dir="$1"
   declare is_git
-  is_git="$(cd "${dir}" \
-    && git rev-parse --is-inside-work-tree 2> /dev/null \
-    || echo false)"
+  if [[ -d "${dir}" ]] ; then
+    is_git="$(cd "${dir}" \
+      && git rev-parse --is-inside-work-tree 2> /dev/null \
+      || echo false)"
+  else
+    is_git=false
+  fi
+
   echo "${is_git}"
 }
 
@@ -419,14 +424,19 @@ function lib::repo_setup() (
   repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
   repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
 
-  util::is_git_repo "${OPTS[PUBKEY_REPO_DIR]}" ||
-    git clone "${repo_ssl}" "${OPTS[PUBKEY_REPO_DIR]}"
+  is_git=$(util::is_git_repo "${OPTS[PUBKEY_REPO_DIR]}")
+  $is_git \
+    || git clone "${repo_ssl}" "${OPTS[PUBKEY_REPO_DIR]}"
 
-  (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
-    git pull)
+  (
+    cd "${OPTS[PUBKEY_REPO_DIR]}" \
+      && git pull
+  )
 
-  (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
-    git remote set-url --push origin "${repo_ssh}")
+  (
+    cd "${OPTS[PUBKEY_REPO_DIR]}" \
+      && git remote set-url --push origin "${repo_ssh}"
+  )
 
   #-----------------------------------------------------------------------------
   # Call subcommand
@@ -464,10 +474,12 @@ function lib::repo_sync() (
     err::no_repo "${OPTS[PUBKEY_REPO_DIR]}"
   fi
 
-  (cd "${OPTS[PUBKEY_REPO_DIR]}" &&
-    git add --all . &&
-    git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}";
-    git push)
+  (
+    cd "${OPTS[PUBKEY_REPO_DIR]}" \
+      && git add --all . \
+      && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}" \
+      && git push
+  )
 
   #-----------------------------------------------------------------------------
   # Call subcommand
@@ -602,8 +614,8 @@ function lib::github_auth() (
   # --git-protocol does not change how you login, it changes how subsequent git operations are handled
   # after signig with --web option, it still automatically creates and downloads the token
   echo "Open URL: github.com/login/device"
-  gh auth status ||
-      gh auth login --hostname github.com \
+  gh auth status \
+      || gh auth login --hostname github.com \
       --git-protocol https \
       --web \
       --scopes "${OPTS[GH_SCOPES]}"

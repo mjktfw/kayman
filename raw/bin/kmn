@@ -111,9 +111,9 @@ function opt::call_cmd() {
   err::cmd_null
 
   if [[ "${FUNCNAME[1]}" == "main" ]] ; then
-    declare call_fun="${ARGS[0]}"
+    declare call_fun="main::${ARGS[0]}"
   else
-    declare call_fun="${FUNCNAME[1]}_${ARGS[0]}"
+    declare call_fun="main::${FUNCNAME[1]}_${ARGS[0]}"
   fi
 
   declare cmds="$(echo $X_CMDS | tr -s [:blank:] '|')"
@@ -154,7 +154,7 @@ function util::is_git_repo() {
 # functions
 ################################################################################
 
-function key() (
+function lib::key() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -183,7 +183,7 @@ function key() (
   opt::call_cmd
 )
 
-function key_gen() (
+function lib::key_gen() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -233,7 +233,7 @@ function key_gen() (
   opt::call_cmd
 )
 
-function key_default() (
+function lib::key_default() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -275,7 +275,7 @@ function key_default() (
   opt::call_cmd
 )
 
-function key_add() (
+function lib::key_add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -321,7 +321,7 @@ function key_add() (
   opt::call_cmd
 )
 
-function copy() (
+function lib::copy() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -359,7 +359,7 @@ function copy() (
   opt::call_cmd
 )
 
-function repo() (
+function lib::repo() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -388,7 +388,7 @@ function repo() (
   opt::call_cmd
 )
 
-function repo_setup() (
+function lib::repo_setup() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -433,7 +433,7 @@ function repo_setup() (
   opt::call_cmd
 )
 
-function repo_sync() (
+function lib::repo_sync() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -474,7 +474,7 @@ function repo_sync() (
   opt::call_cmd
 )
 
-function gitcli() (
+function lib::git() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -500,7 +500,7 @@ function gitcli() (
   opt::call_cmd
 )
 
-function gitcli_config() (
+function lib::git_config() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -542,7 +542,7 @@ function gitcli_config() (
   opt::call_cmd
 )
 
-function githubcli() (
+function lib::github() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -571,7 +571,7 @@ function githubcli() (
   opt::call_cmd
 )
 
-function githubcli_auth() (
+function lib::github_auth() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -615,7 +615,7 @@ function githubcli_auth() (
   opt::call_cmd
 )
 
-function github_ssh() (
+function lib::github_ssh() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -651,7 +651,7 @@ function github_ssh() (
   opt::call_cmd
 )
 
-function keygen() (
+function lib::keygen() (
   key gen "$@"
 )
 

@@ -306,7 +306,7 @@ function lib::key_add() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
   declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-  declare pubkey_path="${keypath}.pub"
+  declare pubkey_path="${key_path}.pub"
 
   # TODO: assure it's public, not private
   cp "${pubkey_path}" "${OPTS[PUBKEY_REPO_DIR]}/pub/"

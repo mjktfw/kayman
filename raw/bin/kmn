@@ -366,7 +366,7 @@ function lib::key_authorize() (
   declare gh_baseurl="https://raw.githubusercontent.com/${OPTS[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
   declare gh_key_url="${gh_baseurl}/pub/${OPTS[KEY_NAME]}.pub"
 
-  curl "${gh_key_url}" >> "${AUTH_KEYS}"
+  curl "${gh_key_url}" >> "${OPTS[AUTH_KEYS]}"
 
   #-----------------------------------------------------------------------------
   # Call subcommand

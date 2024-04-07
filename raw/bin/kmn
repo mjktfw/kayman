@@ -484,7 +484,6 @@ function lib::repo_sync() (
 
   if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
     (
-      echo "PUBKEY_REPO_IDENTITY: ${OPTS[PUBKEY_REPO_IDENTITY]:-""}"
       cd "${OPTS[PUBKEY_REPO_DIR]}" \
         && git config --add --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
     )
@@ -500,7 +499,6 @@ function lib::repo_sync() (
 
   if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
     (
-      echo "PUBKEY_REPO_IDENTITY: ${OPTS[PUBKEY_REPO_IDENTITY]:-""}"
       cd "${OPTS[PUBKEY_REPO_DIR]}" \
         && git config --unset --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
     )

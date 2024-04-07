@@ -487,9 +487,9 @@ function lib::repo_sync() (
   (
     cd "${OPTS[PUBKEY_REPO_DIR]}" \
       && git add --all . \
-      && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}" ||
-    echo here;
-    git push;
+      && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}" \
+      && git push \
+      || git push
   )
 
   if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then

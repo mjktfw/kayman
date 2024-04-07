@@ -475,7 +475,7 @@ function lib::repo_sync() (
     err::no_repo "${OPTS[PUBKEY_REPO_DIR]}"
   fi
 
-  if [[ -z "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
+  if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
     (
       echo "PUBKEY_REPO_IDENTITY: ${OPTS[PUBKEY_REPO_IDENTITY]:-""}"
       cd "${OPTS[PUBKEY_REPO_DIR]}" \
@@ -490,7 +490,7 @@ function lib::repo_sync() (
     git push
   )
 
-  if [[ -z "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
+  if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
     (
       echo "PUBKEY_REPO_IDENTITY: ${OPTS[PUBKEY_REPO_IDENTITY]:-""}"
       cd "${OPTS[PUBKEY_REPO_DIR]}" \

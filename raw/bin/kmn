@@ -173,7 +173,7 @@ function util::add_git_ssh_identity {
   fi
 }
 
-function util::unset_ git_ssh_identity {
+function util::unset_git_ssh_identity {
   declare repo_dir="$1"
   declare identity_file="$2"
 

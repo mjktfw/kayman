@@ -342,13 +342,13 @@ function lib::key_authorize() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
-  declare -r X_OPTS="KEY_NAME PUBKEY_REPO PUBKEY_USER AUTH_KEYS"
+  declare -r X_OPTS="KEY_NAME PUBKEY_REPO PUBKEY_USERNAME AUTH_KEYS"
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
         -k | --key-name ) opt::set2 KEY_NAME ;;
         -r | --pubkey-repo ) opt::set2 PUBKEY_REPO ;;
-        -u | --pubkey-user ) opt::set2 PUBKEY_USER ;;
+        -u | --pubkey-user ) opt::set2 PUBKEY_USERNAME ;;
         -a | --auth-keys ) opt::set2 AUTH_KEYS ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;

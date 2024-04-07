@@ -457,6 +457,7 @@ function lib::repo_sync() (
 
         -r | --repo-dir ) opt::set2 PUBKEY_REPO_DIR ;;
         -m | --message ) opt::set2 PUBKEY_REPO_MESSAGE ;;
+        -i | --identity-file ) opt::set2 PUBKEY_REPO_IDENTITY ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
@@ -474,13 +475,26 @@ function lib::repo_sync() (
     err::no_repo "${OPTS[PUBKEY_REPO_DIR]}"
   fi
 
+  if [[ -z "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
+    (
+      cd "${OPTS[PUBKEY_REPO_DIR]}" \
+        && git config --add --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
+    )
+  fi
+
   (
     cd "${OPTS[PUBKEY_REPO_DIR]}" \
       && git add --all . \
-      && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}" \
-      && git push
+      && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}";
+    git push
   )
 
+  if [[ -z "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
+    (
+      cd "${OPTS[PUBKEY_REPO_DIR]}" \
+        && git config --unset --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
+    )
+  fi
   #-----------------------------------------------------------------------------
   # Call subcommand
   opt::call_cmd

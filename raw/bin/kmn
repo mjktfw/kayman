@@ -741,8 +741,8 @@ function lib::quick() (
   declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
 
   lib::key gen -f "${key_path}" -t "${OPTS[KEY_TYPE]}"
-  lib::key add -f "${key_path}"
   lib::github ssh -f "${key_path}"
+  lib::key add -f "${key_path}"
 
   #-----------------------------------------------------------------------------
   # Call subcommand

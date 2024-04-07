@@ -167,7 +167,7 @@ function lib::key() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="gen default add"
+  declare -r X_CMDS="gen default add authorize"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options

@@ -158,6 +158,7 @@ function util::is_git_repo() {
 function util::realpath() {
   echo "$(cd "$(dirname -- "$1")" >/dev/null; pwd -P)/$(basename -- "$1")"
 }
+
 ################################################################################
 # functions
 ################################################################################
@@ -333,7 +334,7 @@ function lib::key_add() (
   opt::call_cmd
 )
 
-function lib::copy() (
+function lib::key_authorize() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -348,6 +349,7 @@ function lib::copy() (
         -k | --key-name ) opt::set2 KEY_NAME ;;
         -r | --pubkey-repo ) opt::set2 PUBKEY_REPO ;;
         -u | --pubkey-user ) opt::set2 PUBKEY_USER ;;
+        -a | --auth-keys ) opt::set2 AUTH_KEYS ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
@@ -364,7 +366,7 @@ function lib::copy() (
   declare gh_baseurl="https://raw.githubusercontent.com/${OPTS[PUBKEY_USERNAME]}/${PUBKEY_REPO}/master"
   declare gh_key_url="${gh_baseurl}/pub/${OPTS[KEY_NAME]}.pub"
 
-  curl "${gh_key_url}" >> "${HOME}/.ssh/authorized_keys"
+  curl "${gh_key_url}" >> "${AUTH_KEYS}"
 
   #-----------------------------------------------------------------------------
   # Call subcommand

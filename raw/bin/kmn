@@ -214,7 +214,6 @@ function lib::key_gen() (
       esac done
   }
 
-
   #-----------------------------------------------------------------------------
   # Parse arguments
   declare ARGS=("$@")
@@ -693,11 +692,51 @@ function lib::keygen() (
   key gen "$@"
 )
 
+function lib::quick() (
+    #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+ X_OPTS="KEY_FILE KEY_NAME KEY_TYPE KEY_DIR"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -f | --key-file ) opt::set2 KEY_FILE ;;
+        -k | --key-name ) opt::set2 KEY_NAME ;;
+        -t | --key-type ) opt::set2 KEY_TYPE ;;
+        -d | --key-dir ) opt::set2 KEY_DIR ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+
+  lib::key gen -f "${key_path}" -t "${OPTS[KEY_TYPE]}"
+  lib::key add -f "${key_path}"
+  lib::github ssh -f "${key_path}"
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
 function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="example key keygen copy git github repo"
+  declare -r X_CMDS="example key keygen copy git github repo quick"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options

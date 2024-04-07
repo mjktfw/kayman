@@ -155,6 +155,9 @@ function util::is_git_repo() {
   echo "${is_git}"
 }
 
+function util::realpath() {
+  echo "$(cd "$(dirname -- "$1")" >/dev/null; pwd -P)/$(basename -- "$1")"
+}
 ################################################################################
 # functions
 ################################################################################
@@ -311,7 +314,10 @@ function lib::key_add() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
   declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  key_path="$(util::realpath "${key_path}")"
   declare pubkey_path="${key_path}.pub"
+
+
 
   # TODO: assure it's public, not private
   cp "${pubkey_path}" "${OPTS[PUBKEY_REPO_DIR]}/pub/"

@@ -699,7 +699,7 @@ function lib::quick() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
- X_OPTS="KEY_FILE KEY_NAME KEY_TYPE KEY_DIR"
+  declare -r X_OPTS="KEY_FILE KEY_NAME KEY_TYPE KEY_DIR"
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 

@@ -451,7 +451,7 @@ function lib::repo_sync() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
-  declare -r X_OPTS="PUBKEY_REPO_DIR PUBKEY_REPO_MESSAGE"
+  declare -r X_OPTS="PUBKEY_REPO_DIR PUBKEY_REPO_MESSAGE PUBKEY_REPO_IDENTITY"
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 

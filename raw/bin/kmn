@@ -477,6 +477,7 @@ function lib::repo_sync() (
 
   if [[ -z "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
     (
+      echo "${OPTS[PUBKEY_REPO_IDENTITY]:-""}"
       cd "${OPTS[PUBKEY_REPO_DIR]}" \
         && git config --add --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
     )

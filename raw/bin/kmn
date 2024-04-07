@@ -159,6 +159,34 @@ function util::realpath() {
   echo "$(cd "$(dirname -- "$1")" >/dev/null; pwd -P)/$(basename -- "$1")"
 }
 
+function util::add_ git_ssh_identity {
+  declare repo_dir="$1"
+  declare identity_file="$2"
+
+  identity_file="$(util::realpath "${identity_file}")"
+
+  if [[ "${identity_file}" ]]; then
+    (
+      cd "${repo_dir}" \
+        && git config --add --local core.sshCommand "ssh -i '${identity_file}'"
+    )
+  fi
+}
+
+function util::unset_ git_ssh_identity {
+  declare repo_dir="$1"
+  declare identity_file="$2"
+
+  identity_file="$(util::realpath "${identity_file}")"
+
+  if [[ "${identity_file}" ]]; then
+    (
+      cd "${repo_dir}" \
+        && git config --unset --local core.sshCommand "ssh -i '${identity_file}'"
+    )
+  fi
+}
+
 ################################################################################
 # functions
 ################################################################################
@@ -314,7 +342,6 @@ function lib::key_add() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
   declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
-  key_path="$(util::realpath "${key_path}")"
   declare pubkey_path="${key_path}.pub"
 
 
@@ -483,27 +510,17 @@ function lib::repo_sync() (
     err::no_repo "${OPTS[PUBKEY_REPO_DIR]}"
   fi
 
-  if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
-    (
+  util::add_git_ssh_identity "${OPTS[PUBKEY_REPO_DIR]}" "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" \
+    && (
       cd "${OPTS[PUBKEY_REPO_DIR]}" \
-        && git config --add --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
-    )
-  fi
+        && git add --all . \
+        && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}" \
+        && git push \
+        || git push
+    ) \
+    && util::unset_git_ssh_identity "${OPTS[PUBKEY_REPO_DIR]}" "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" \
+    || util::unset_git_ssh_identity "${OPTS[PUBKEY_REPO_DIR]}" "${OPTS[PUBKEY_REPO_IDENTITY]:-""}"
 
-  (
-    cd "${OPTS[PUBKEY_REPO_DIR]}" \
-      && git add --all . \
-      && git commit -m "${OPTS[PUBKEY_REPO_MESSAGE]}" \
-      && git push \
-      || git push
-  )
-
-  if [[ "${OPTS[PUBKEY_REPO_IDENTITY]:-""}" ]]; then
-    (
-      cd "${OPTS[PUBKEY_REPO_DIR]}" \
-        && git config --unset --local core.sshCommand "ssh -i '${OPTS[PUBKEY_REPO_IDENTITY]}'"
-    )
-  fi
   #-----------------------------------------------------------------------------
   # Call subcommand
   opt::call_cmd

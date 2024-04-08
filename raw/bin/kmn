@@ -744,8 +744,9 @@ function lib::github_ssh() (
     )"
 
   declare pubkey_path="${key_path}.pub"
+  declare key_comment="$(basename "${key_path}")"
 
-  gh ssh-key add "${pubkey_path}" --type authentication
+  gh ssh-key add "${pubkey_path}" --type authentication --title "${key_comment}"
   gh config set --host github.com git_protocol ssh
 
   #-----------------------------------------------------------------------------

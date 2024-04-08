@@ -276,7 +276,13 @@ function lib::key_gen() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
-  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_path
+  key_path=$(util::path \
+    -p "${OPTS[KEY_FILE]}" \
+    -d "${OPTS[KEY_DIR]}" \
+    -f "${OPTS[KEY_NAME]}")
+
+  # declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
   declare key_comment="$(basename "${key_path}")"
 
   # automatically creates dir, if non-existing

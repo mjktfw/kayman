@@ -279,7 +279,7 @@ function lib::key_gen() (
   declare key_path
   key_path="$(util::path \
     -f "${OPTS[KEY_FILE]}" \
-    -d "${OPTS[KEY_DIRA]}" \
+    -d "${OPTS[KEY_DIR]}" \
     -n "${OPTS[KEY_NAME]}")"
 
   # declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"

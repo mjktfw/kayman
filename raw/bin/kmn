@@ -84,7 +84,7 @@ function opt::set () {
 function opt::set2 () {
   declare opt_name="$1"
   declare opt_string="${ARGS[0]}"
-  declare opt_val="${ARGS[1]:?$(err::empty_val2 $opt_string)}"
+  declare opt_val="${ARGS[1]?$(err::empty_val2 $opt_string)}"
 
   OPTS["${opt_name}"]="${opt_val}"
   ARGS=("${ARGS[@]:2}")

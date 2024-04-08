@@ -279,10 +279,10 @@ function lib::key_gen() (
   declare key_path
   key_path="$(util::path \
     -f "${OPTS[KEY_FILE]}" \
+    -n "${OPTS[KEY_NAME]}" \
     -d "${OPTS[KEY_DIR]}" \
-    -n "${OPTS[KEY_NAME]}")"
+    )"
 
-  # declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
   declare key_comment="$(basename "${key_path}")"
 
   # automatically creates dir, if non-existing
@@ -330,7 +330,13 @@ function lib::key_default() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
-  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_path
+  key_path="$(util::path \
+    -f "${OPTS[KEY_FILE]}" \
+    -n "${OPTS[KEY_NAME]}" \
+    -d "${OPTS[KEY_DIR]}" \
+    )"
+
   declare key_type="$(util::get_key_type "${key_path}")"
   declare key_id_path="$(dirname "${key_path}")/id_${key_type}"
 
@@ -372,10 +378,14 @@ function lib::key_add() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_path
+  key_path="$(util::path \
+    -f "${OPTS[KEY_FILE]}" \
+    -n "${OPTS[KEY_NAME]}" \
+    -d "${OPTS[KEY_DIR]}" \
+    )"
+
   declare pubkey_path="${key_path}.pub"
-
-
 
   # TODO: assure it's public, not private
   cp "${pubkey_path}" "${OPTS[PUBKEY_REPO_DIR]}/pub/"

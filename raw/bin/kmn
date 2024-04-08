@@ -234,8 +234,8 @@ function lib::key_gen() (
 
         -f | --key-file ) opt::set2 KEY_FILE ;;
         -k | --key-name ) opt::set2 KEY_NAME ;;
-        -t | --key-type ) opt::set2 KEY_TYPE ;;
         -d | --key-dir ) opt::set2 KEY_DIR ;;
+        -t | --key-type ) opt::set2 KEY_TYPE ;;
         --make-default ) opt::set KEY_MAKE_DEFAULT ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
@@ -716,14 +716,15 @@ function lib::quick() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
-  declare -r X_OPTS="KEY_FILE KEY_NAME KEY_TYPE KEY_DIR"
+  declare -r X_OPTS="KEY_FILE KEY_NAME KEY_TYPE KEY_DIR GH_SSH_AUTH"
   function opt::parse_args() {
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
         -f | --key-file ) opt::set2 KEY_FILE ;;
         -k | --key-name ) opt::set2 KEY_NAME ;;
-        -t | --key-type ) opt::set2 KEY_TYPE ;;
         -d | --key-dir ) opt::set2 KEY_DIR ;;
+        -t | --key-type ) opt::set2 KEY_TYPE ;;
+        -s | --ssh-auth ) opt::set GH_SSH_AUTH ;;
 
         -- ) break ;; -* ) err::opt ;; * )  break ;;
       esac done
@@ -741,8 +742,15 @@ function lib::quick() (
   declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
 
   lib::key gen -f "${key_path}" -t "${OPTS[KEY_TYPE]}"
+  # TODO: strip permissions on the key?
   lib::github ssh -f "${key_path}"
   lib::key add -f "${key_path}"
+
+  # TODO: add switch to use the newly generated key to login to repo?
+  if [[ "${OPTS[GH_SSH_AUTH]:-""}"]] ; then
+    lib::github ssh -f "${key_path}"
+  fi
+
 
   #-----------------------------------------------------------------------------
   # Call subcommand

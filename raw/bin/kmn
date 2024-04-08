@@ -772,7 +772,7 @@ function lib::quick() (
   lib::key add -f "${key_path}"
 
   # TODO: add switch to use the newly generated key to login to repo?
-  if [[ "${OPTS[GH_SSH_AUTH]:-""}"]] ; then
+  if [[ "${OPTS[GH_SSH_AUTH]:-""}" ]] ; then
     lib::github ssh -f "${key_path}"
   fi
 

@@ -736,7 +736,14 @@ function lib::github_ssh() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  pubkey_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}.pub"
+  declare key_path
+  key_path="$(util::path \
+    -f "${OPTS[KEY_FILE]}" \
+    -n "${OPTS[KEY_NAME]}" \
+    -d "${OPTS[KEY_DIR]}" \
+    )"
+
+  declare pubkey_path="${key_path}.pub"
 
   gh ssh-key add "${pubkey_path}" --type authentication
   gh config set --host github.com git_protocol ssh

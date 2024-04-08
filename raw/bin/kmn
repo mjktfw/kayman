@@ -194,7 +194,7 @@ function util::path() {
           -p | --path ) opt::set2 PATH ;;
           -f | --filename ) opt::set2 FILENAME ;;
           -d | --dirname ) opt::set2 DIRNAME ;;
-          -a | --absolute opt::set ABSOLUTE ;;
+          -a | --absolute ) opt::set ABSOLUTE ;;
 
           -- ) break ;; -* ) err::opt ;; * )  break ;;
         esac done
@@ -205,7 +205,7 @@ function util::path() {
     opt::parse_args
 
     declare filepath="${OPTS[PATH]:-${OPTS[DIRNAME]}/${OPTS[FILENAME]}}"
-    if [[ "${OPTS[ABSOLUTE]}" ]] ;; then
+    if [[ "${OPTS[ABSOLUTE]}" ]] ; then
       filepath=$(util::realpath "${filepath}")
     fi
 

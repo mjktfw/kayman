@@ -787,7 +787,12 @@ function lib::quick() (
   #-----------------------------------------------------------------------------
   # (EDIT) body
 
-  declare key_path="${OPTS[KEY_FILE]:-${OPTS[KEY_DIR]}/${OPTS[KEY_NAME]}}"
+  declare key_path
+  key_path="$(util::path \
+    -f "${OPTS[KEY_FILE]}" \
+    -n "${OPTS[KEY_NAME]}" \
+    -d "${OPTS[KEY_DIR]}" \
+    )"
 
   lib::key gen -f "${key_path}" -t "${OPTS[KEY_TYPE]}"
   # TODO: strip permissions on the key?

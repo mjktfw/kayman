@@ -205,7 +205,7 @@ function util::path() {
   opt::parse_args
 
   declare filepath="${OPTS[PATH]:-${OPTS[DIRNAME]}/${OPTS[BASENAME]}}"
-  if [[ "${OPTS[ABSOLUTE]}" ]] ; then
+  if [[ "${OPTS[ABSOLUTE]:-""}" ]] ; then
     filepath=$(util::realpath "${filepath}")
   fi
 

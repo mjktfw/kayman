@@ -187,6 +187,31 @@ function util::unset_git_ssh_identity {
   fi
 }
 
+function util::path() {
+    function opt::parse_args() {
+      while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+          -p | --path ) opt::set2 PATH ;;
+          -f | --filename ) opt::set2 FILENAME ;;
+          -d | --dirname ) opt::set2 DIRNAME ;;
+          -a | --absolute opt::set ABSOLUTE ;;
+
+          -- ) break ;; -* ) err::opt ;; * )  break ;;
+        esac done
+    }
+
+    declare ARGS=("$@")
+    declare -A OPTS
+    opt::parse_args
+
+    declare filepath="${OPTS[PATH]:-${OPTS[DIRNAME]}/${OPTS[FILENAME]}}"
+    if [[ "${OPTS[ABSOLUTE]}" ]] ;; then
+      filepath=$(util::realpath "${filepath}")
+    fi
+
+    echo "${filepath}"
+  }
+
 ################################################################################
 # functions
 ################################################################################

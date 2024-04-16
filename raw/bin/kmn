@@ -696,12 +696,15 @@ function lib::github_auth() (
   # after signig with --web option, it still automatically creates and downloads the token
   echo "Open URL: github.com/login/device"
   gh auth status \
-      || gh auth login --hostname github.com \
+      || gh auth login \
+      --hostname github.com \
       --git-protocol https \
       --web \
       --scopes "${OPTS[GH_SCOPES]}"
 
   gh config set --host github.com prompt disabled
+  gh auth setup-git --hostname github.com
+
 
   #-----------------------------------------------------------------------------
   # Call subcommand

@@ -2,7 +2,7 @@
 # https://github.com/shakibamoshiri/bash-CLI-template
 
 ################################################################################
-# bash strict mode
+# bash settings
 ################################################################################
 
 set -T # inherit DEBUG and RETURN trap for functions
@@ -12,7 +12,7 @@ set -e # exit immediately on errors
 set -u # exit on not assigned variables
 set -o pipefail # exit on pipe failure
 
-shopt -s extglob
+shopt -s extglob # enable extended pattern matching operators
 
 ################################################################################
 # environment

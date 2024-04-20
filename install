@@ -1,2 +1,2 @@
 #!/bin/bash
-./drop/install
+./drop/drop install

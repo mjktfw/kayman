@@ -1,2 +1,2 @@
 #!/bin/bash
-./drop/hook
+./drop/drop hook

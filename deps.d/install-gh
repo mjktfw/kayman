@@ -2,7 +2,7 @@
 
 # 2023.12.23 @ https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 
-set -e
+type -p gh >/dev/null && exit 0
 
 type -p curl >/dev/null || (sudo apt -y update && sudo apt -y install curl -y)
 

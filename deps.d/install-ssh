@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+
+type -p ssh-keygen >/dev/null && exit 0
 
 sudo apt -y update &&
     sudo apt -y install ssh

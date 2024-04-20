@@ -1,2 +1,2 @@
 #!/bin/bash
-./drop/drop install
+./drop/drop install "$@"

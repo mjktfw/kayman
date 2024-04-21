@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/shakibamoshiri/bash-CLI-template
+# based on: https://github.com/shakibamoshiri/bash-CLI-template
 
 ################################################################################
 # bash settings
@@ -139,6 +139,16 @@ function util::get_key_comment() {
   declare key_comment="$(echo "${key_pub}" | cut -d' ' -f3)"
 
   echo "${key_comment}"
+}
+
+function util::is_ssh_private_key() {
+    declare file=$1
+    ssh-keygen -y -e -f "$file" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "File '$file' is a valid SSH private key."
+    else
+        echo "File '$file' is not a valid SSH private key."
+    fi
 }
 
 function util::is_git_repo() {

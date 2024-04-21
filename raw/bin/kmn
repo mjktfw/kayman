@@ -758,7 +758,7 @@ function lib::github_ssh() (
 )
 
 function lib::keygen() (
-  key gen "$@"
+  lib::key gen "$@"
 )
 
 function lib::quick() (

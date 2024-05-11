@@ -4,30 +4,17 @@
 
 ### Assumptions
 
-- installation is handled by a submodule
-- automatic installation without manual editing, unless non-standard location
-- usage might require some manual editing of `*.conf` files
-- usage only requires location of `user.conf` config file
-- dependencies will be installed during the installation process
-
-### Steps
-
-- `./hook` - enable `post-merge` hook
-- `./deploy` :
-  - `./app/unlink` - unlink previous version, if exists
-  - `./deploy.d/ungit` - copy to gitignored directory
-  - `./deploy.d/prep` - move files, rename, chmod, chown, etc. if necessary
-  - `./deploy.d/deps` - install dependencies
-  - `./deploy.d/link` - symlink files to system file structure
+- install, update and uninstall are all handled by `drop` submodule - please refers to its `README.md`
+- `ungit`, `install`, `uninstall`  are the only required scripts to execute `drop` submodule functions
+- `ungit` is independent of system file hierarchy and prepares the file structure of the `app` directory
+- `install` and `uninstall` may require editing non-standard locations in `app.conf` depending on system
+- usage might require editing of `user.conf` files
 
 ### Dependencies
 
 - libraries: `ssh`, `gh`, `curl`
-- os:
-  - `~/.profile.d/*.sh` sourced to set env vars on shell launch
-  - follows 'XDG Base Directory Specification'
 
-### Config
+### Config files
 
 - `profile`
 - `app.conf`
@@ -45,7 +32,7 @@
 ### Key operations
 
 - `kmn keygen`: generate a new key for the device
-- `kmn add`: add the key to the pubkey repo and push
+- `kmn key add`: add the key to the pubkey repo and push
 
 ### Other
 

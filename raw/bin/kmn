@@ -630,6 +630,8 @@ function lib::repo_setup() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
+  repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
+
   is_git=$(util::is_git_repo "${OPTS[PUBKEY_REPO_DIR]}")
   $is_git \
     || git clone "${repo_ssl}" "${OPTS[PUBKEY_REPO_DIR]}"
@@ -672,7 +674,6 @@ function lib::repo_set-ssh() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) body
-  repo_ssl="https://github.com/${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
   repo_ssh="git@github.com:${OPTS[PUBKEY_USERNAME]}/${OPTS[PUBKEY_REPO]}.git"
 
   is_git=$(util::is_git_repo "${OPTS[PUBKEY_REPO_DIR]}")

@@ -1,49 +1,59 @@
-# Install and config
-## Assumptions:
+# Kayman
+
+## Install and config
+
+### Assumptions
+
+- installation is handled by a submodule
 - automatic installation without manual editing, unless non-standard location
 - usage might require some manual editing of `*.conf` files
 - usage only requires location of `user.conf` config file
 - dependencies will be installed during the installation process
-- script names follow `${PREFIX}-*` pattern
 
-## Steps
+### Steps
+
 - `./hook` - enable `post-merge` hook
 - `./deploy` :
-    - `./app/unlink` - unlink previous version, if exists
-    - `./deploy.d/ungit` - copy to gitignored directory
-    - `./deploy.d/prep` - move files, rename, chmod, chown, etc. if necessary
-    - `./deploy.d/deps` - install dependencies
-    - `./deploy.d/link` - symlink files to system file structure
+  - `./app/unlink` - unlink previous version, if exists
+  - `./deploy.d/ungit` - copy to gitignored directory
+  - `./deploy.d/prep` - move files, rename, chmod, chown, etc. if necessary
+  - `./deploy.d/deps` - install dependencies
+  - `./deploy.d/link` - symlink files to system file structure
 
-## Dependencies
+### Dependencies
+
 - libraries: `ssh`, `gh`, `curl`
 - os:
-    - `~/.profile.d/*.sh` sourced to set env vars on shell launch
-    - follows 'XDG Base Directory Specification'
+  - `~/.profile.d/*.sh` sourced to set env vars on shell launch
+  - follows 'XDG Base Directory Specification'
 
-## Config
+### Config
+
 - `profile`
 - `app.conf`
 - `user.conf`
 
-# Use: local
-## Configure:
-- `user.conf`: setup git email
+## Local usage
 
-## First run and Setup
-- `./kmn-git-config`: configure git
-- `./kmn-github-auth`: authorize to github with a token
-- `./kmn-install-mkays`: get repo with pubkeys
+### First run and Setup
 
-## Create key
-- `./kmn-keygen`: generate a new key for the device
-- `./kmn-github-ssh`: authorize to github with the key
+- edit `user.conf`: setup git email
+- `kmn config`: configure
+- `kmn repo auth`: authorize to github with a token
+- `kmn repo setup`: get repo with pubkeys
 
-## Register key
-- `./kmn-add`: add the key to the pubkey repo and push
+### Key operations
 
-# Use: remote
+- `kmn keygen`: generate a new key for the device
+- `kmn add`: add the key to the pubkey repo and push
 
-## Authorize server
-- `./kmn-copy-id`: copy id to authorized_keys
-- or simply curl >> to authorized_keys
+### Other
+
+- `kmn repo authorize`: authorize to github with the key
+
+## Remote usage
+
+### Authorize server
+
+- `kmn key authorize`: copy id to authorized_keys
+- or simply curl >> to authorized_keys, eg.: `curl https://raw.githubusercontent.com/mjktfw/mkays/main/pub/b.pub >> ~/.ssh/authorized_keys`

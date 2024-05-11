@@ -843,8 +843,8 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="example key git repo quick"
-  X_CMDS="${X_CMDS} keygen copy" # aliases
+  declare -r X_CMDS="example key git repo quick keygen copy"
+
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options
   declare -r X_OPTS=""

@@ -226,6 +226,48 @@ function util::path() {
 # subcommands
 ################################################################################
 
+function lib::config() (
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented subcommands
+  declare -r X_CMDS=""
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) Implemented options
+  declare -r X_OPTS="GIT_USERNAME GIT_EMAIL"
+  function opt::parse_args() {
+    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
+
+        -u | --git-username ) opt::set2 GIT_USERNAME ;;
+        -e | --git-email ) opt::set2 GIT_EMAIL ;;
+
+        -- ) break ;; -* ) err::opt ;; * )  break ;;
+      esac done
+  }
+
+  #-----------------------------------------------------------------------------
+  # Parse arguments
+  declare ARGS=("$@")
+  declare -A OPTS
+  opt::parse_args; opt::get_from_env
+
+  #-----------------------------------------------------------------------------
+  # (EDIT) body
+
+  # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
+  # TODO: or better for windows: where.exe ssh.exe
+  # TODO: must be quoted due to spaces!
+  # TODO: SSH_CMD=$(where.exe ssh.exe)
+  # TODO: git config core.sshCommand "\"$CMD\""
+
+  git config --global user.email "${OPTS[GIT_EMAIL]}"
+  git config --global user.name "${OPTS[GIT_USERNAME]}"
+
+  #-----------------------------------------------------------------------------
+  # Call subcommand
+  opt::call_cmd
+)
+
 function lib::key() (
 
   #-----------------------------------------------------------------------------
@@ -731,48 +773,6 @@ function lib::repo_sync() (
   opt::call_cmd
 )
 
-function lib::config() (
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented subcommands
-  declare -r X_CMDS=""
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) Implemented options
-  declare -r X_OPTS="GIT_USERNAME GIT_EMAIL"
-  function opt::parse_args() {
-    while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
-
-        -u | --git-username ) opt::set2 GIT_USERNAME ;;
-        -e | --git-email ) opt::set2 GIT_EMAIL ;;
-
-        -- ) break ;; -* ) err::opt ;; * )  break ;;
-      esac done
-  }
-
-  #-----------------------------------------------------------------------------
-  # Parse arguments
-  declare ARGS=("$@")
-  declare -A OPTS
-  opt::parse_args; opt::get_from_env
-
-  #-----------------------------------------------------------------------------
-  # (EDIT) body
-
-  # TODO: for windows '"C:/Program Files/OpenSSH/ssh.exe"'
-  # TODO: or better for windows: where.exe ssh.exe
-  # TODO: must be quoted due to spaces!
-  # TODO: SSH_CMD=$(where.exe ssh.exe)
-  # TODO: git config core.sshCommand "\"$CMD\""
-
-  git config --global user.email "${OPTS[GIT_EMAIL]}"
-  git config --global user.name "${OPTS[GIT_USERNAME]}"
-
-  #-----------------------------------------------------------------------------
-  # Call subcommand
-  opt::call_cmd
-)
-
 function lib::quick() (
     #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
@@ -844,7 +844,7 @@ function main() (
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented subcommands
-  declare -r X_CMDS="example key git repo quick keygen copy"
+  declare -r X_CMDS="config key repo quick keygen copy"
 
   #-----------------------------------------------------------------------------
   # (EDIT) Implemented options

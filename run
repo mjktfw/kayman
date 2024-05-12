@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function lib::init-submodules() {
+  git submodule update --init --recursive
+  git config --local submodule.recurse true
+}
+
+function main() (
+
+  case "$1" in
+    init ) lib::init-submodules ;;
+    ungit ) ./drop/drop ungit "${@:2}" ;;
+    install ) ./drop/drop install "${@:2}" ;;
+    uninstall ) ./drop/drop uninstall "${@:2}" ;;
+    * ) echo "Invalid argument: $1" && exit 1 ;;
+  esac
+
+)
+
+################################################################################
+# RUN
+################################################################################
+
+main "$@"

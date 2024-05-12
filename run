@@ -9,7 +9,12 @@ function main() (
 
   case "$1" in
     init ) lib::init-submodules ;;
+
     quick ) main init \
+      && main hook up \
+      && main install ;;
+
+    slow ) main init \
       && main hook up \
       && main ungit ;;
 

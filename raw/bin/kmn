@@ -310,7 +310,7 @@ function lib::key_gen() (
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
         -f | --key-file ) opt::set2 KEY_FILE ;;
-        -n | --key-name ) opt::set2 KEY_NAME ;;
+        -k | -n | --key-name ) opt::set2 KEY_NAME ;;
         -d | --key-dir ) opt::set2 KEY_DIR ;;
         -t | --key-type ) opt::set2 KEY_TYPE ;;
         --make-default ) opt::set KEY_MAKE_DEFAULT ;;
@@ -414,7 +414,7 @@ function lib::key_add() (
     while [[ "${#ARGS[@]}" -gt 0 ]]; do case "${ARGS[0]}" in
 
         -f | --key-file ) opt::set2 KEY_FILE ;;
-        -k | --key-name ) opt::set2 KEY_NAME ;;
+        -k | -n | --key-name ) opt::set2 KEY_NAME ;;
         -d | --key-dir ) opt::set2 KEY_DIR ;;
         -r | --repo-dir ) opt::set2 PUBKEY_REPO_DIR ;;
 

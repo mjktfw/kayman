@@ -32,7 +32,7 @@
 ### Key operations
 
 - `kmn keygen`: generate a new key for the device
-- `kmn key add`: add the key to the pubkey repo and push
+- `kmn key add `: add the key to the pubkey repo and push
 
 ### Other
 
@@ -43,4 +43,4 @@
 ### Authorize server
 
 - `kmn key authorize`: copy id to authorized_keys
-- or simply curl >> to authorized_keys, eg.: `curl https://raw.githubusercontent.com/mjktfw/mkays/main/pub/b.pub >> ~/.ssh/authorized_keys`
+- or simply curl >> to authorized_keys, eg.: `curl https://raw.githubusercontent.com/mjktfw/mkays/main/pub/KEYNAME.pub >> ~/.ssh/authorized_keys`

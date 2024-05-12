@@ -13,6 +13,9 @@ function main() (
     ungit ) ./drop/drop ungit "${@:2}" ;;
     install ) ./drop/drop install "${@:2}" ;;
     uninstall ) ./drop/drop uninstall "${@:2}" ;;
+
+    quick ) main init && main hook up && main ungit ;;
+
     * ) echo "Invalid argument: $1" && exit 1 ;;
   esac
 

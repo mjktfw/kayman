@@ -1,0 +1,17 @@
+#!/bin/bash
+
+function init-submodules() {
+  git submodule update --init --recursive
+  git config --local submodule.recurse true
+}
+
+function link-drop() {
+  ln -sf "./drop/drop" "./run"
+}
+
+################################################################################
+# RUN
+################################################################################
+
+init-submodules
+link-drop
